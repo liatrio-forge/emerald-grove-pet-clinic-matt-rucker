@@ -87,6 +87,7 @@ repos:
         language: system
         always_run: true
         pass_filenames: false
+        stages: [commit-msg]
         description: Prevents direct commits to the main branch, enforcing a PR-based workflow
 
 # Configuration options
