@@ -75,6 +75,19 @@ repos:
         files: '^pom\.xml$|^src/'
         pass_filenames: false
         description: Ensures Maven compilation succeeds
+      - id: no-direct-commits-to-main
+        name: Block direct commits to main
+        entry: >
+          bash -c '
+          BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null);
+          if [ "$BRANCH" = "main" ]; then
+          echo "ERROR: Direct commits to main are not allowed. Please create a feature branch.";
+          exit 1;
+          fi'
+        language: system
+        always_run: true
+        pass_filenames: false
+        description: Prevents direct commits to the main branch, enforcing a PR-based workflow
 
 # Configuration options
 default_stages: [pre-commit]
