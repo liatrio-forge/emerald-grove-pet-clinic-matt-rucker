@@ -56,6 +56,10 @@ pre-commit install --hook-type commit-msg
 - **shellcheck**: Lints shell scripts
 - **gitlint**: Validates commit messages
 
+### Branch Protection
+
+- **no-direct-commits-to-main**: Prevents direct commits to the main branch, enforcing PR-based workflow
+
 ## Configuration Files
 
 ### `.pre-commit-config.yaml`
@@ -137,6 +141,38 @@ Enforces consistent Markdown formatting:
 - Fenced code blocks with language specifiers
 - Proper heading structure
 - No trailing spaces
+
+### No Direct Commits to Main
+
+This hook prevents direct commits to the `main` branch, enforcing a
+pull-request-based workflow where all changes reach `main` only through
+reviewed PRs.
+
+**When it fires:** The hook runs on every commit (`always_run: true`)
+regardless of which files are staged. It checks the current branch name
+using `git symbolic-ref --short HEAD`.
+
+**Behavior:**
+
+- On `main` branch: the hook exits with a non-zero status and displays
+  an error message:
+
+    ```text
+    ERROR: Direct commits to main are not allowed. Please create a feature branch.
+    ```
+
+- On any other branch: the hook passes silently
+- In detached HEAD states (common in CI): the hook passes gracefully
+
+**Bypassing the hook:** In exceptional cases, you can skip the hook
+using the standard `--no-verify` flag:
+
+```bash
+git commit --no-verify -m "message"
+```
+
+Use this only when absolutely necessary and document the reason for
+bypassing.
 
 ## Troubleshooting
 
