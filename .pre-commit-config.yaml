@@ -70,16 +70,16 @@ repos:
     hooks:
       - id: maven-compile-check
         name: Maven compilation check
-        entry: ./mvnw compile
+        entry: bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bash_profile 2>/dev/null || true; ./mvnw compile'
         language: system
-        files: '^pom\.xml$|^src/'
+        files: '^pom\.xml$|^src/|^\.mvn/'
         pass_filenames: false
         description: Ensures Maven compilation succeeds
       - id: maven-test-check
         name: Maven test check
-        entry: ./mvnw test
+        entry: bash -c 'source ~/.zshrc 2>/dev/null || source ~/.bash_profile 2>/dev/null || true; ./mvnw test'
         language: system
-        files: '^pom\.xml$|^src/'
+        files: '^pom\.xml$|^src/|^\.mvn/'
         pass_filenames: false
         description: Ensures all tests pass before committing
       - id: no-direct-commits-to-main
