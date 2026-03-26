@@ -46,6 +46,7 @@ pre-commit install --hook-type commit-msg
 ### Java Specific
 
 - **Maven-compile-check**: Ensures Maven compilation succeeds
+- **Maven-test-check**: Runs the full test suite and ensures all tests pass before committing
 
 ### Documentation
 

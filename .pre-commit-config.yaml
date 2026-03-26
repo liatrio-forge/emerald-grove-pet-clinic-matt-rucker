@@ -75,6 +75,13 @@ repos:
         files: '^pom\.xml$|^src/'
         pass_filenames: false
         description: Ensures Maven compilation succeeds
+      - id: maven-test-check
+        name: Maven test check
+        entry: ./mvnw test
+        language: system
+        files: '^pom\.xml$|^src/'
+        pass_filenames: false
+        description: Ensures all tests pass before committing
       - id: no-direct-commits-to-main
         name: Block direct commits to main
         entry: >
