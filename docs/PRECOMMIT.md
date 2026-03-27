@@ -26,6 +26,9 @@ pre-commit install
 
 # Install commit-msg hook
 pre-commit install --hook-type commit-msg
+
+# Install pre-push hook
+pre-commit install --hook-type pre-push
 ```
 
 ## Available Hooks
@@ -45,8 +48,7 @@ pre-commit install --hook-type commit-msg
 
 ### Java Specific
 
-- **Maven-compile-check**: Ensures Maven compilation succeeds
-- **Maven-test-check**: Runs the full test suite and ensures all tests pass before committing
+- **Maven-test-check**: Runs the full test suite and ensures all tests pass before pushing
 
 ### Documentation
 
@@ -123,15 +125,6 @@ This custom hook enforces the project's strict TDD methodology:
 ```bash
 # Checks if production code changes have corresponding test changes
 # Fails if src/main/java/ files are modified without src/test/java/ changes
-```
-
-### Maven Compilation Check
-
-Ensures that all changes compile successfully:
-
-```bash
-# Runs: ./mvnw compile
-# Fails if compilation fails
 ```
 
 ### Markdown Linting

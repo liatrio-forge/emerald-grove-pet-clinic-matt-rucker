@@ -33,6 +33,10 @@ pre-commit install
 echo "📝 Installing commit-msg hook..."
 pre-commit install --hook-type commit-msg
 
+# Install pre-push hook
+echo "🚀 Installing pre-push hook..."
+pre-commit install --hook-type pre-push
+
 # Run pre-commit on all files to ensure everything is clean
 echo "🧹 Running pre-commit on all files..."
 pre-commit run --all-files || {
@@ -40,14 +44,6 @@ pre-commit run --all-files || {
     echo "💡 You can run 'pre-commit run --all-files' again after fixing issues."
     exit 1
 }
-
-# Test Maven compilation
-echo "🔨 Testing Maven compilation..."
-./mvnw compile -q
-
-# Test Maven tests
-echo "🧪 Testing Maven tests..."
-./mvnw test -q
 
 echo "✅ Pre-commit setup completed successfully!"
 echo ""
