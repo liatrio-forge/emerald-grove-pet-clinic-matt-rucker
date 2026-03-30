@@ -41,14 +41,6 @@ pre-commit run --all-files || {
     exit 1
 }
 
-# Test Maven compilation
-echo "🔨 Testing Maven compilation..."
-./mvnw compile -q
-
-# Test Maven tests
-echo "🧪 Testing Maven tests..."
-./mvnw test -q
-
 echo "✅ Pre-commit setup completed successfully!"
 echo ""
 echo "📋 Next steps:"

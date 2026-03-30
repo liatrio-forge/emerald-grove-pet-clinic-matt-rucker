@@ -45,7 +45,7 @@ pre-commit install --hook-type commit-msg
 
 ### Java Specific
 
-- **Maven-compile-check**: Ensures Maven compilation succeeds
+- **Maven-test-check**: Runs the full test suite and ensures all tests pass before committing
 
 ### Documentation
 
@@ -122,15 +122,6 @@ This custom hook enforces the project's strict TDD methodology:
 ```bash
 # Checks if production code changes have corresponding test changes
 # Fails if src/main/java/ files are modified without src/test/java/ changes
-```
-
-### Maven Compilation Check
-
-Ensures that all changes compile successfully:
-
-```bash
-# Runs: ./mvnw compile
-# Fails if compilation fails
 ```
 
 ### Markdown Linting
@@ -225,13 +216,13 @@ pre-commit run --all-files --jobs 4
 # Modify .pre-commit-config.yaml exclude patterns
 ```
 
-#### Maven Compilation Check Slow
+#### Maven Test Check
 
-The Maven compilation check ensures code quality but can be slow. Consider:
+`maven-test-check` runs `./mvnw test` during `pre-commit`.
 
-- Running it only on specific file changes
-- Using incremental compilation
-- Running less frequently during development
+This repository is optimized for AI-agent-driven development. Because preserving a
+passing test suite at every commit is more important than minimizing commit latency,
+the full Maven test suite runs as a pre-commit hook.
 
 ## Customization
 

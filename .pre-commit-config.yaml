@@ -68,13 +68,14 @@ repos:
   # Spring Boot specific hooks
   - repo: local
     hooks:
-      - id: maven-compile-check
-        name: Maven compilation check
-        entry: ./mvnw compile
+      - id: maven-test-check
+        name: Maven test check
+        entry: ./mvnw test
         language: system
-        files: '^pom\.xml$|^src/'
+        files: '^pom\.xml$|^src/|^\.mvn/'
         pass_filenames: false
-        description: Ensures Maven compilation succeeds
+        stages: [pre-commit]
+        description: Ensures all tests pass before committing
       - id: no-direct-commits-to-main
         name: Block direct commits to main
         entry: >
@@ -98,7 +99,6 @@ fail_fast: false
 exclude: |
   (?x)^(
     \.git/.*|
-    \.mvn/.*|
     target/.*|
     \.idea/.*|
     \.vscode/.*|
