@@ -33,10 +33,6 @@ pre-commit install
 echo "📝 Installing commit-msg hook..."
 pre-commit install --hook-type commit-msg
 
-# Install pre-push hook
-echo "🚀 Installing pre-push hook..."
-pre-commit install --hook-type pre-push
-
 # Run pre-commit on all files to ensure everything is clean
 echo "🧹 Running pre-commit on all files..."
 pre-commit run --all-files || {

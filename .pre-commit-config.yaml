@@ -74,8 +74,8 @@ repos:
         language: system
         files: '^pom\.xml$|^src/|^\.mvn/'
         pass_filenames: false
-        stages: [pre-push]
-        description: Ensures all tests pass before pushing
+        stages: [pre-commit]
+        description: Ensures all tests pass before committing
       - id: no-direct-commits-to-main
         name: Block direct commits to main
         entry: >
@@ -99,7 +99,6 @@ fail_fast: false
 exclude: |
   (?x)^(
     \.git/.*|
-    \.mvn/.*|
     target/.*|
     \.idea/.*|
     \.vscode/.*|
