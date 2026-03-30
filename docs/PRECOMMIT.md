@@ -26,9 +26,6 @@ pre-commit install
 
 # Install commit-msg hook
 pre-commit install --hook-type commit-msg
-
-# Install pre-push hook
-pre-commit install --hook-type pre-push
 ```
 
 ## Available Hooks
