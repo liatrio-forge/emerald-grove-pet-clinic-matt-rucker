@@ -73,7 +73,7 @@ Refer to these comprehensive guides for detailed information:
 
 ## Tools and Frameworks
 
-- **Testing**: JUnit 5, Mockito, TestContainers, JaCoCo
+- **Testing**: JUnit 5, Mockito, TestContainers, JaCoCo, JMeter
 - **Build**: Maven or Gradle
 - **Quality**: Checkstyle, SpotBugs, SonarQube
 - **Version Control**: Git with conventional commits
