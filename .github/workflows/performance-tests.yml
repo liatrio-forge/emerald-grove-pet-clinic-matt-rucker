@@ -1,0 +1,44 @@
+name: Performance Tests
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  jmeter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build application
+        run: ./mvnw package -DskipTests
+
+      - name: Start application
+        run: ./mvnw spring-boot:run &
+
+      - name: Wait for application to be ready
+        run: |
+          curl --retry 30 --retry-delay 5 --retry-connrefused \
+               --silent --output /dev/null --write-out "%{http_code}" \
+               http://localhost:8080/
+
+      - name: Run performance tests
+        run: ./mvnw verify -Pperformance
+
+      - name: Upload JMeter HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-html-report
+          path: target/jmeter/reports/
