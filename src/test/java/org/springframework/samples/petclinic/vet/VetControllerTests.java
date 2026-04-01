@@ -16,6 +16,8 @@
 
 package org.springframework.samples.petclinic.vet;
 
+import java.util.List;
+
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,6 +54,16 @@ class VetControllerTests {
 
 	@MockitoBean
 	private VetRepository vets;
+
+	@MockitoBean
+	private SpecialtyRepository specialties;
+
+	private Specialty radiology() {
+		Specialty radiology = new Specialty();
+		radiology.setId(1);
+		radiology.setName("radiology");
+		return radiology;
+	}
 
 	private Vet james() {
 		Vet james = new Vet();
@@ -76,7 +90,7 @@ class VetControllerTests {
 		given(this.vets.findAll()).willReturn(Lists.newArrayList(james(), helen()));
 		given(this.vets.findAll(any(Pageable.class)))
 			.willReturn(new PageImpl<Vet>(Lists.newArrayList(james(), helen())));
-
+		given(this.specialties.findAll()).willReturn(Lists.newArrayList(radiology()));
 	}
 
 	@Test
@@ -96,5 +110,65 @@ class VetControllerTests {
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 			.andExpect(jsonPath("$.vetList[0].id").value(1));
 	}
+
+	// === 1.1 Specialty Filter Acceptance Tests ===
+
+	@Test
+	void testFilterBySpecialty() throws Exception {
+		given(this.vets.findBySpecialtyName(eq("radiology"), any(Pageable.class)))
+			.willReturn(new PageImpl<>(List.of(helen())));
+		mockMvc.perform(get("/vets.html?page=1&filter=radiology"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("listVets"))
+			.andExpect(model().attribute("listVets", hasSize(1)))
+			.andExpect(view().name("vets/vetList"));
+	}
+
+	@Test
+	void testFilterByNone() throws Exception {
+		given(this.vets.findByNoSpecialties(any(Pageable.class))).willReturn(new PageImpl<>(List.of(james())));
+		mockMvc.perform(get("/vets.html?page=1&filter=none"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasSize(1)))
+			.andExpect(view().name("vets/vetList"));
+	}
+
+	@Test
+	void testNoFilterReturnsAllVets() throws Exception {
+		mockMvc.perform(get("/vets.html?page=1"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasSize(2)))
+			.andExpect(view().name("vets/vetList"));
+	}
+
+	@Test
+	void testUnrecognizedFilterFallsBackToAll() throws Exception {
+		mockMvc.perform(get("/vets.html?page=1&filter=unknown"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("listVets", hasSize(2)))
+			.andExpect(view().name("vets/vetList"));
+	}
+
+	@Test
+	void testModelContainsSpecialtiesAndCurrentFilter() throws Exception {
+		given(this.vets.findBySpecialtyName(eq("radiology"), any(Pageable.class)))
+			.willReturn(new PageImpl<>(List.of(helen())));
+		mockMvc.perform(get("/vets.html?page=1&filter=radiology"))
+			.andExpect(status().isOk())
+			.andExpect(model().attributeExists("specialties"))
+			.andExpect(model().attribute("currentFilter", "radiology"));
+	}
+
+	@Test
+	void testJsonEndpointWithFilter() throws Exception {
+		given(this.vets.findBySpecialtyName(eq("radiology"), any(Pageable.class)))
+			.willReturn(new PageImpl<>(List.of(helen())));
+		mockMvc.perform(get("/vets").param("filter", "radiology").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.vetList", hasSize(1)));
+	}
+
+	// === End 1.1 Specialty Filter Acceptance Tests ===
 
 }

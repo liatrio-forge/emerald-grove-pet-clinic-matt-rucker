@@ -19,7 +19,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -54,5 +56,19 @@ public interface VetRepository extends Repository<Vet, Integer> {
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
 	Page<Vet> findAll(Pageable pageable) throws DataAccessException;
+
+	/**
+	 * Find vets that have a specific specialty (case-insensitive match).
+	 */
+	@Transactional(readOnly = true)
+	@Query("SELECT v FROM Vet v JOIN v.specialties s WHERE LOWER(s.name) = LOWER(:specialtyName)")
+	Page<Vet> findBySpecialtyName(@Param("specialtyName") String specialtyName, Pageable pageable);
+
+	/**
+	 * Find vets that have no specialties.
+	 */
+	@Transactional(readOnly = true)
+	@Query("SELECT v FROM Vet v WHERE v.specialties IS EMPTY")
+	Page<Vet> findByNoSpecialties(Pageable pageable);
 
 }

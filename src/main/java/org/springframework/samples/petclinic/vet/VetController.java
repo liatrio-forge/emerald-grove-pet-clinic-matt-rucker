@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -37,17 +38,20 @@ class VetController {
 
 	private final VetRepository vetRepository;
 
-	public VetController(VetRepository vetRepository) {
+	private final SpecialtyRepository specialtyRepository;
+
+	public VetController(VetRepository vetRepository, SpecialtyRepository specialtyRepository) {
 		this.vetRepository = vetRepository;
+		this.specialtyRepository = specialtyRepository;
 	}
 
 	@GetMapping("/vets.html")
-	public String showVetList(@RequestParam(defaultValue = "1") int page, Model model) {
-		// Here we are returning an object of type 'Vets' rather than a collection of Vet
-		// objects so it is simpler for Object-Xml mapping
-		Vets vets = new Vets();
-		Page<Vet> paginated = findPaginated(page);
-		vets.getVetList().addAll(paginated.toList());
+	public String showVetList(@RequestParam(defaultValue = "1") int page,
+			@RequestParam(defaultValue = "") String filter, Model model) {
+		Page<Vet> paginated = findFilteredPaginated(page, filter);
+		Collection<Specialty> specialties = this.specialtyRepository.findAll();
+		model.addAttribute("specialties", specialties);
+		model.addAttribute("currentFilter", filter);
 		return addPaginationModel(page, paginated, model);
 	}
 
@@ -60,18 +64,27 @@ class VetController {
 		return "vets/vetList";
 	}
 
-	private Page<Vet> findPaginated(int page) {
+	private Page<Vet> findFilteredPaginated(int page, String filter) {
 		int pageSize = 5;
 		Pageable pageable = PageRequest.of(page - 1, pageSize);
-		return vetRepository.findAll(pageable);
+		if ("none".equalsIgnoreCase(filter)) {
+			return this.vetRepository.findByNoSpecialties(pageable);
+		}
+		if (!filter.isBlank() && isKnownSpecialty(filter)) {
+			return this.vetRepository.findBySpecialtyName(filter, pageable);
+		}
+		return this.vetRepository.findAll(pageable);
+	}
+
+	private boolean isKnownSpecialty(String filter) {
+		return this.specialtyRepository.findAll().stream().anyMatch(s -> s.getName().equalsIgnoreCase(filter));
 	}
 
 	@GetMapping({ "/vets" })
-	public @ResponseBody Vets showResourcesVetList() {
-		// Here we are returning an object of type 'Vets' rather than a collection of Vet
-		// objects so it is simpler for JSon/Object mapping
+	public @ResponseBody Vets showResourcesVetList(@RequestParam(defaultValue = "") String filter) {
 		Vets vets = new Vets();
-		vets.getVetList().addAll(this.vetRepository.findAll());
+		Page<Vet> results = findFilteredPaginated(1, filter);
+		vets.getVetList().addAll(results.getContent());
 		return vets;
 	}
 

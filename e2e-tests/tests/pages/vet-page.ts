@@ -19,4 +19,18 @@ export class VetPage extends BasePage {
     await this.goto('/vets.html');
     await this.heading().waitFor();
   }
+
+  filterPills(): Locator {
+    return this.page.locator('#specialty-filters a');
+  }
+
+  async clickFilterPill(name: string): Promise<void> {
+    await this.page
+      .locator('#specialty-filters a', { hasText: new RegExp(`^${name}$`, 'i') })
+      .click();
+  }
+
+  activeFilterPill(): Locator {
+    return this.page.locator('#specialty-filters a.btn-primary');
+  }
 }
