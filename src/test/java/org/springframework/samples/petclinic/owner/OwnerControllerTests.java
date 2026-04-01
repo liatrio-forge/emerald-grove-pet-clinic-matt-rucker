@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
@@ -91,7 +92,7 @@ class OwnerControllerTests {
 	void setup() {
 
 		Owner george = george();
-		given(this.owners.findByLastNameStartingWith(eq("Franklin"), any(Pageable.class)))
+		given(this.owners.searchOwners(eq("Franklin"), eq(""), eq(""), any(Pageable.class)))
 			.willReturn(new PageImpl<>(List.of(george)));
 
 		given(this.owners.findById(TEST_OWNER_ID)).willReturn(Optional.of(george));
@@ -142,14 +143,14 @@ class OwnerControllerTests {
 	@Test
 	void testProcessFindFormSuccess() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(List.of(george(), new Owner()));
-		when(this.owners.findByLastNameStartingWith(anyString(), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.searchOwners(anyString(), anyString(), anyString(), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1")).andExpect(status().isOk()).andExpect(view().name("owners/ownersList"));
 	}
 
 	@Test
 	void testProcessFindFormByLastName() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(List.of(george()));
-		when(this.owners.findByLastNameStartingWith(eq("Franklin"), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.searchOwners(eq("Franklin"), eq(""), eq(""), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin"))
 			.andExpect(status().is3xxRedirection())
 			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
@@ -158,7 +159,7 @@ class OwnerControllerTests {
 	@Test
 	void testProcessFindFormNoOwnersFound() throws Exception {
 		Page<Owner> tasks = new PageImpl<>(List.of());
-		when(this.owners.findByLastNameStartingWith(eq("Unknown Surname"), any(Pageable.class))).thenReturn(tasks);
+		when(this.owners.searchOwners(eq("Unknown Surname"), eq(""), eq(""), any(Pageable.class))).thenReturn(tasks);
 		mockMvc.perform(get("/owners?page=1").param("lastName", "Unknown Surname"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeHasFieldErrors("owner", "lastName"))
@@ -228,6 +229,160 @@ class OwnerControllerTests {
 			.andExpect(view().name("owners/ownerDetails"));
 	}
 
+	// === 1.1 Extended Search Acceptance Tests ===
+
+	@Test
+	void testProcessFindFormByLastNameAndCity() throws Exception {
+		Owner george = george();
+		Page<Owner> results = new PageImpl<>(List.of(george, new Owner()));
+		when(this.owners.searchOwners(eq("Franklin"), eq(""), eq("Madison"), any(Pageable.class))).thenReturn(results);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin").param("city", "Madison"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessFindFormByTelephoneOnly() throws Exception {
+		Owner george = george();
+		Page<Owner> results = new PageImpl<>(List.of(george));
+		when(this.owners.searchOwners(eq(""), eq("6085551023"), eq(""), any(Pageable.class))).thenReturn(results);
+		mockMvc.perform(get("/owners?page=1").param("telephone", "6085551023"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+
+	@Test
+	void testProcessFindFormByAllThreeFields() throws Exception {
+		Owner george = george();
+		Page<Owner> results = new PageImpl<>(List.of(george));
+		when(this.owners.searchOwners(eq("Franklin"), eq("6085551023"), eq("Madison"), any(Pageable.class)))
+			.thenReturn(results);
+		mockMvc
+			.perform(get("/owners?page=1").param("lastName", "Franklin")
+				.param("telephone", "6085551023")
+				.param("city", "Madison"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+
+	@Test
+	void testProcessFindFormEmptyFieldsBroadSearch() throws Exception {
+		Page<Owner> results = new PageImpl<>(List.of(george(), new Owner()));
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class))).thenReturn(results);
+		mockMvc.perform(get("/owners?page=1")).andExpect(status().isOk()).andExpect(view().name("owners/ownersList"));
+	}
+
+	@Test
+	void testProcessFindFormTelephoneValidationError() throws Exception {
+		mockMvc.perform(get("/owners?page=1").param("telephone", "abc"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/findOwners"))
+			.andExpect(model().attributeHasFieldErrors("owner", "telephone"));
+	}
+
+	@Test
+	void testProcessFindFormSingleResultRedirectWithNewParams() throws Exception {
+		Owner george = george();
+		Page<Owner> results = new PageImpl<>(List.of(george));
+		when(this.owners.searchOwners(eq(""), eq(""), eq("Madison"), any(Pageable.class))).thenReturn(results);
+		mockMvc.perform(get("/owners?page=1").param("city", "Madison"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+	}
+
+	@Test
+	void testProcessFindFormNoResultsWithNewParams() throws Exception {
+		Page<Owner> results = new PageImpl<>(List.of());
+		when(this.owners.searchOwners(eq("Unknown"), eq(""), eq("Nowhere"), any(Pageable.class))).thenReturn(results);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Unknown").param("city", "Nowhere"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/findOwners"));
+	}
+
+	@Test
+	void testPaginationPreservesSearchParams() throws Exception {
+		Page<Owner> results = new PageImpl<>(List.of(george(), new Owner()));
+		when(this.owners.searchOwners(eq("Franklin"), eq(""), eq("Madison"), any(Pageable.class))).thenReturn(results);
+		mockMvc.perform(get("/owners?page=1").param("lastName", "Franklin").param("city", "Madison"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("lastName", "Franklin"))
+			.andExpect(model().attribute("city", "Madison"))
+			.andExpect(model().attribute("telephone", ""));
+	}
+
+	// === End 1.1 Extended Search Acceptance Tests ===
+
+	// === 2.1 Duplicate Detection Acceptance Tests ===
+
+	@Test
+	void testProcessCreationFormDuplicateRejected() throws Exception {
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("Joe", "Bloggs",
+				"1316761638"))
+			.willReturn(List.of(george()));
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "Joe")
+				.param("lastName", "Bloggs")
+				.param("address", "123 Caramel Street")
+				.param("city", "London")
+				.param("telephone", "1316761638"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(model().attributeHasErrors("owner"));
+	}
+
+	@Test
+	void testProcessCreationFormNoDuplicateSucceeds() throws Exception {
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("Joe", "Bloggs",
+				"1316761638"))
+			.willReturn(List.of());
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "Joe")
+				.param("lastName", "Bloggs")
+				.param("address", "123 Caramel Street")
+				.param("city", "London")
+				.param("telephone", "1316761638"))
+			.andExpect(status().is3xxRedirection());
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormDuplicateRejected() throws Exception {
+		Owner existing = new Owner();
+		existing.setId(99);
+		existing.setFirstName("Joe");
+		existing.setLastName("Bloggs");
+		existing.setTelephone("1616291589");
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("Joe", "Bloggs",
+				"1616291589"))
+			.willReturn(List.of(existing));
+		mockMvc
+			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
+				.param("lastName", "Bloggs")
+				.param("address", "123 Caramel Street")
+				.param("city", "London")
+				.param("telephone", "1616291589"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(model().attributeHasErrors("owner"));
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormSelfExclusionSucceeds() throws Exception {
+		Owner george = george();
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("George", "Franklin",
+				"6085551023"))
+			.willReturn(List.of(george));
+		mockMvc
+			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "George")
+				.param("lastName", "Franklin")
+				.param("address", "110 W. Liberty St.")
+				.param("city", "Madison")
+				.param("telephone", "6085551023"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+
+	// === End 2.1 Duplicate Detection Acceptance Tests ===
+
 	@Test
 	public void testProcessUpdateOwnerFormWithIdMismatch() throws Exception {
 		int pathOwnerId = 1;
@@ -247,5 +402,80 @@ class OwnerControllerTests {
 			.andExpect(redirectedUrl("/owners/" + pathOwnerId + "/edit"))
 			.andExpect(flash().attributeExists("error"));
 	}
+
+	// === 3.1 CSV Export Acceptance Tests ===
+
+	@Test
+	void testCsvExportContentTypeAndHeaders() throws Exception {
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(george())));
+		mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType("text/csv"))
+			.andExpect(header().string("Content-Disposition", "attachment; filename=\"owners.csv\""));
+	}
+
+	@Test
+	void testCsvExportHeaderRow() throws Exception {
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of()));
+		mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andExpect(
+					content().string(org.hamcrest.Matchers.startsWith("First Name,Last Name,Address,City,Telephone")));
+	}
+
+	@Test
+	void testCsvExportDataRows() throws Exception {
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(george())));
+		mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andExpect(content()
+				.string(org.hamcrest.Matchers.containsString("George,Franklin,110 W. Liberty St.,Madison,6085551023")));
+	}
+
+	@Test
+	void testCsvExportWithSearchParams() throws Exception {
+		when(this.owners.searchOwners(eq("Franklin"), eq(""), eq("Madison"), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(george())));
+		mockMvc.perform(get("/owners.csv").param("lastName", "Franklin").param("city", "Madison"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("George,Franklin")));
+	}
+
+	@Test
+	void testCsvExportEmptyResult() throws Exception {
+		when(this.owners.searchOwners(eq("Nobody"), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of()));
+		String csv = mockMvc.perform(get("/owners.csv").param("lastName", "Nobody"))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse()
+			.getContentAsString();
+		// Should contain only the header row (plus newline)
+		assertThat(csv.trim().split("\n")).hasSize(1);
+	}
+
+	@Test
+	void testCsvExportEscapesCommasAndQuotes() throws Exception {
+		Owner ownerWithComma = new Owner();
+		ownerWithComma.setFirstName("Jane");
+		ownerWithComma.setLastName("O'Brien");
+		ownerWithComma.setAddress("123 Main St, Apt 4");
+		ownerWithComma.setCity("Springfield");
+		ownerWithComma.setTelephone("5551234567");
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(ownerWithComma)));
+		String csv = mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse()
+			.getContentAsString();
+		// Address with comma should be quoted
+		assertThat(csv).contains("\"123 Main St, Apt 4\"");
+	}
+
+	// === End 3.1 CSV Export Acceptance Tests ===
 
 }

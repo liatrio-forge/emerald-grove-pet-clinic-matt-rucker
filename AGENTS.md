@@ -1,8 +1,8 @@
-# AI Agent Development Guide
+# AI Agent Development Guide — Emerald Grove Veterinary Clinic
 
-This document provides essential guidance for AI agents working on the Emerald Grove Veterinary Clinic application.
+This document provides guidance for AI agents working on this Spring Boot web application. Sections marked **(Claude-specific)** apply only to Claude Code.
 
-## Context Marker
+## Context Marker (Claude-specific)
 
 Always begin your response with all active emoji markers, in the order they were introduced.
 
@@ -10,26 +10,35 @@ Format:  "<marker1><marker2><marker3>\n<response>"
 
 The marker for this instruction is: 🤖
 
-## Critical Requirement: Strict TDD
+## Mandatory Governance
 
-**MANDATORY**: All feature implementations must follow **Strict Test-Driven Development (TDD)** methodology:
+**Read and comply with [`docs/constitution.md`](docs/constitution.md) before any implementation work.**
+The constitution defines immutable principles: test-first, library-first, simplicity, anti-abstraction, integration-first testing, proof artifacts, uncertainty markers, single-threaded execution, and conventional commits.
 
-1. **RED Phase**: Write a failing test that defines the desired behavior
-2. **GREEN Phase**: Write the minimum code required to make the test pass
-3. **REFACTOR Phase**: Improve the code while maintaining test coverage
+## Project Overview
 
-**Never write production code before a failing test.**
+- **Framework**: Spring Boot 4.0 (Spring MVC, Spring Data JPA, Thymeleaf)
+- **Database**: H2 (default), MySQL, PostgreSQL via Spring profiles
+- **Build**: Maven (primary), Gradle (secondary)
+- **Testing**: JUnit 5, Mockito, TestContainers, JaCoCo, Playwright (E2E)
 
-## Documentation Structure
-
-Refer to these comprehensive guides for detailed information:
+## Documentation
 
 - @docs/DEVELOPMENT.md — **[Development Guide](docs/DEVELOPMENT.md)** - TDD workflow, setup, and development process
 - @docs/TESTING.md — **[Testing Guide](docs/TESTING.md)** - Testing strategies, patterns, and TDD implementation
 - @docs/ARCHITECTURE.md — **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and technical decisions
 - @docs/PRECOMMIT.md — **[Pre-commit Guide](docs/PRECOMMIT.md)** - Hook configuration, usage, and troubleshooting
+- @docs/constitution.md — **[Constitution](docs/constitution.md)** - Immutable governance principles
 
-## TDD Standards
+## TDD Requirements
+
+All feature implementations must follow **Strict Test-Driven Development (TDD)**:
+
+### Dual-Loop TDD
+
+- **Outer loop**: Convert acceptance criteria into failing acceptance/integration tests. The test writer must NOT see implementation plans (context isolation).
+- **Inner loop**: Red-Green-Refactor at the unit level. Write a failing unit test → minimal code to pass → refactor.
+- **Verify**: Run the full test suite after the inner loop completes. All tests must pass before advancing.
 
 ### Coverage Requirements
 
@@ -43,13 +52,18 @@ Refer to these comprehensive guides for detailed information:
 - Use descriptive test method names that document behavior
 - Tests must be **fast, isolated, and repeatable**
 
-### Quality Gates
+## Branching Strategy: Trunk-Based Development
 
-- Tests written before implementation (RED phase)
-- All tests pass before commit
-- Code coverage meets standards before merge
+- **Never commit directly to `main`** — `main` requires PRs
+- Use **short-lived feature branches** named by convention:
+  - `feat/<feature-name>` — new features
+  - `fix/<bug-name>` — bug fixes
+  - `docs/<topic>` — documentation changes
+  - `chore/<task>` — maintenance/tooling
+- Branches should be **short-lived** (hours to days, not weeks)
+- **Delete branches** after merge
 
-## Code Standards
+## Coding Standards
 
 ### Architecture
 
@@ -63,31 +77,72 @@ Refer to these comprehensive guides for detailed information:
 - **Proper entity relationships** with appropriate cascade settings
 - **DTOs** for data transfer between layers
 
-## Development Workflow
+### Commits
 
-1. **Requirements Analysis** → Understand feature and edge cases
-2. **Test Design** → Write comprehensive failing tests
-3. **TDD Implementation** → Follow Red-Green-Refactor cycle
-4. **Integration** → Verify with existing code
-5. **Documentation** → Update relevant docs
+- Use conventional commits: `type(scope): description`
+- Use `[NEEDS CLARIFICATION]` tags for ambiguous requirements — never guess
+- Ask before installing new tools or dependencies
+
+## Definition of Done
+
+A feature is not complete unless ALL of the following are true:
+
+### Validation Completeness
+
+- Every user-facing form input must have **server-side validation** before the feature is considered done
+- Validation error messages must be user-friendly and specific (not raw exceptions)
+- Edge cases (empty, null, too long, invalid format) must be covered
+
+### Error Handling
+
+- All user-facing endpoints must handle not-found and invalid states with **friendly error pages**, never raw exceptions or stack traces
+- Use `@ControllerAdvice` or per-controller exception handlers as appropriate
+
+### Pagination & Filtering Contract
+
+- Any list endpoint that supports filtering or search **must preserve query parameters across pagination links** from day one — this is not a follow-up task, it is part of the feature
+- New filter parameters must be included in pagination URLs
+
+### Frontend Quality
+
+- UI changes must follow accessibility best practices
+- Test responsive behavior at standard breakpoints
+
+## UI & Frontend Work (Claude-specific)
+
+- Use the **frontend-design** skill for building UI components and pages
+- Use the **web-design-guidelines** skill to review UI for accessibility and design compliance
+- For automated E2E testing, use **Playwright** (see `e2e-tests/`)
+- Never use embedded/preview browsers for UI verification — they produce misleading results
+- For visual verification, use headed Playwright: `npm run test:headed` from `e2e-tests/`
+
+## Database Access (Claude-specific)
+
+- Use **dbhub** (Bytebase MCP server) to query the database during development and testing
+- Default database is H2 in-memory; connection details are in `application.properties`
 
 ## Tools and Frameworks
 
-- **Testing**: JUnit 5, Mockito, TestContainers, JaCoCo, JMeter
-- **Build**: Maven or Gradle
+- **Testing**: JUnit 5, Mockito, TestContainers, JaCoCo, JMeter, Playwright
+- **Build**: Maven (primary), Gradle (secondary)
 - **Quality**: Checkstyle, SpotBugs, SonarQube
+- **Database**: dbhub for direct DB querying during development (Claude-specific)
 - **Version Control**: Git with conventional commits
+- **Pre-commit**: Hooks installed via `pre-commit` (see `docs/PRECOMMIT.md`)
 
 ## Review Checklist
 
 Before committing code:
 
-- [ ] Tests written before implementation
-- [ ] All tests pass
+- [ ] Tests written before implementation (outer loop first, then inner loop)
+- [ ] All tests pass (`./mvnw test`)
 - [ ] Code coverage meets requirements (>90%)
 - [ ] Follows SOLID principles
 - [ ] No code duplication
-- [ ] Proper error handling
-- [ ] Documentation updated
-
-This guide ensures consistent, high-quality TDD practices for AI contributors to the Emerald Grove Veterinary Clinic application.
+- [ ] Proper error handling (friendly pages, no stack traces)
+- [ ] All form inputs have server-side validation
+- [ ] Pagination preserves filter/search params
+- [ ] UI reviewed with web-design-guidelines skill (Claude-specific)
+- [ ] Commit message follows conventional commits
+- [ ] Branch is not `main`
+- [ ] `[NEEDS CLARIFICATION]` markers are resolved

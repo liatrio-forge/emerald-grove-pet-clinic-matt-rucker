@@ -60,4 +60,39 @@ export class OwnerPage extends BasePage {
   async clickEditOwner(): Promise<void> {
     await this.page.getByRole('link', { name: /Edit Owner/i }).click();
   }
+
+  async searchByTelephone(telephone: string): Promise<void> {
+    await this.page.locator('input#telephone').fill(telephone);
+    await this.page.getByRole('button', { name: /Find Owner/i }).click();
+  }
+
+  async searchByCity(city: string): Promise<void> {
+    await this.page.locator('input#city').fill(city);
+    await this.page.getByRole('button', { name: /Find Owner/i }).click();
+  }
+
+  async searchByMultipleFields(params: {
+    lastName?: string;
+    telephone?: string;
+    city?: string;
+  }): Promise<void> {
+    if (params.lastName) {
+      await this.page.locator('input#lastName').fill(params.lastName);
+    }
+    if (params.telephone) {
+      await this.page.locator('input#telephone').fill(params.telephone);
+    }
+    if (params.city) {
+      await this.page.locator('input#city').fill(params.city);
+    }
+    await this.page.getByRole('button', { name: /Find Owner/i }).click();
+  }
+
+  async clickExportCsv(): Promise<void> {
+    await this.page.locator('#export-csv').click();
+  }
+
+  exportCsvLink(): Locator {
+    return this.page.locator('#export-csv');
+  }
 }

@@ -15,11 +15,14 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Repository class for <code>Owner</code> domain objects. All method names are compliant
@@ -58,5 +61,24 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 	 * input for id)
 	 */
 	Optional<Owner> findById(Integer id);
+
+	/**
+	 * Search owners by optional combination of lastName, telephone, and city. All
+	 * non-empty parameters are combined with AND logic using case-insensitive starts-with
+	 * matching.
+	 */
+	@Query("SELECT o FROM Owner o WHERE "
+			+ "(:lastName = '' OR LOWER(o.lastName) LIKE LOWER(CONCAT(:lastName, '%'))) AND "
+			+ "(:telephone = '' OR o.telephone LIKE CONCAT(:telephone, '%')) AND "
+			+ "(:city = '' OR LOWER(o.city) LIKE LOWER(CONCAT(:city, '%')))")
+	Page<Owner> searchOwners(@Param("lastName") String lastName, @Param("telephone") String telephone,
+			@Param("city") String city, Pageable pageable);
+
+	/**
+	 * Find owners by exact firstName, lastName, and telephone (case-insensitive) for
+	 * duplicate detection.
+	 */
+	List<Owner> findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase(String firstName, String lastName,
+			String telephone);
 
 }
