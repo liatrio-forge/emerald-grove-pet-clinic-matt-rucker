@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -72,5 +73,12 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 			+ "(:city = '' OR LOWER(o.city) LIKE LOWER(CONCAT(:city, '%')))")
 	Page<Owner> searchOwners(@Param("lastName") String lastName, @Param("telephone") String telephone,
 			@Param("city") String city, Pageable pageable);
+
+	/**
+	 * Find owners by exact firstName, lastName, and telephone (case-insensitive) for
+	 * duplicate detection.
+	 */
+	List<Owner> findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase(String firstName, String lastName,
+			String telephone);
 
 }

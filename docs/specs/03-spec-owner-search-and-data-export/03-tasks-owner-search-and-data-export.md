@@ -51,7 +51,7 @@ Extend the Find Owners flow to support searching by any combination of lastName,
 - [x] 1.7 **Write Playwright E2E test** `owner-search-extended.spec.ts` — test that searches by telephone find the correct owner, test that pagination preserves filter params in the URL, update `owner-page.ts` page object with `searchByTelephone()` and `searchByCity()` methods.
 - [x] 1.8 **Capture proof artifacts** — screenshot of updated Find Owners form, save to `docs/specs/03-spec-owner-search-and-data-export/03-proofs/`.
 
-### [ ] 2.0 Duplicate Owner Detection on Create and Update
+### [x] 2.0 Duplicate Owner Detection on Create and Update
 
 Add duplicate detection to the owner creation and update flows. A duplicate is defined as an existing owner with the same firstName + lastName + telephone (case-insensitive). Display a clear global form error when a duplicate is detected. Exclude the current owner from the check during updates.
 
@@ -62,14 +62,14 @@ Add duplicate detection to the owner creation and update flows. A duplicate is d
 
 #### 2.0 Tasks
 
-- [ ] 2.1 **Outer loop — write failing acceptance tests** in `OwnerControllerTests`: (a) create owner with duplicate firstName+lastName+telephone is rejected with global error, (b) create owner with different telephone succeeds, (c) update owner to match another owner's firstName+lastName+telephone is rejected, (d) update owner without changing fields succeeds (self-exclusion), (e) verify the error message text is user-friendly.
-- [ ] 2.2 **Add duplicate-check repository method** to `OwnerRepository` — add a method to find owners by firstName + lastName + telephone with case-insensitive exact matching (e.g., `@Query` or derived method `findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase`). Return `Optional<Owner>` or `List<Owner>`.
-- [ ] 2.3 **Add duplicate detection to `OwnerController.processCreationForm`** — after Bean Validation passes, call the duplicate-check method. If a match exists, reject with a global `BindingResult` error and return the form view.
-- [ ] 2.4 **Add duplicate detection to `OwnerController.processUpdateOwnerForm`** — after Bean Validation passes, call the duplicate-check method. If a match exists AND its ID differs from the owner being edited, reject with a global error.
-- [ ] 2.5 **Update `createOrUpdateOwnerForm.html`** — add a Thymeleaf block to display global form errors (not field-specific) as a Bootstrap alert above the form fields.
-- [ ] 2.6 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
-- [ ] 2.7 **Write Playwright E2E test** `owner-duplicate-detection.spec.ts` — create an owner, attempt to create the same owner again, verify error message appears, verify no second record was created (search should still return one result).
-- [ ] 2.8 **Capture proof artifacts** — save test output and screenshot of duplicate error to `docs/specs/03-spec-owner-search-and-data-export/03-proofs/`.
+- [x] 2.1 **Outer loop — write failing acceptance tests** in `OwnerControllerTests`: (a) create owner with duplicate firstName+lastName+telephone is rejected with global error, (b) create owner with different telephone succeeds, (c) update owner to match another owner's firstName+lastName+telephone is rejected, (d) update owner without changing fields succeeds (self-exclusion), (e) verify the error message text is user-friendly.
+- [x] 2.2 **Add duplicate-check repository method** to `OwnerRepository` — add a method to find owners by firstName + lastName + telephone with case-insensitive exact matching (e.g., `@Query` or derived method `findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase`). Return `Optional<Owner>` or `List<Owner>`.
+- [x] 2.3 **Add duplicate detection to `OwnerController.processCreationForm`** — after Bean Validation passes, call the duplicate-check method. If a match exists, reject with a global `BindingResult` error and return the form view.
+- [x] 2.4 **Add duplicate detection to `OwnerController.processUpdateOwnerForm`** — after Bean Validation passes, call the duplicate-check method. If a match exists AND its ID differs from the owner being edited, reject with a global error.
+- [x] 2.5 **Update `createOrUpdateOwnerForm.html`** — add a Thymeleaf block to display global form errors (not field-specific) as a Bootstrap alert above the form fields.
+- [x] 2.6 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
+- [x] 2.7 **Write Playwright E2E test** `owner-duplicate-detection.spec.ts` — create an owner, attempt to create the same owner again, verify error message appears, verify no second record was created (search should still return one result).
+- [x] 2.8 **Capture proof artifacts** — save test output and screenshot of duplicate error to `docs/specs/03-spec-owner-search-and-data-export/03-proofs/`.
 
 ### [ ] 3.0 CSV Export of Owner Search Results
 

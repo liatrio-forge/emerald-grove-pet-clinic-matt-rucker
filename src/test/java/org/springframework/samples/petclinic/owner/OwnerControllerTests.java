@@ -311,6 +311,77 @@ class OwnerControllerTests {
 
 	// === End 1.1 Extended Search Acceptance Tests ===
 
+	// === 2.1 Duplicate Detection Acceptance Tests ===
+
+	@Test
+	void testProcessCreationFormDuplicateRejected() throws Exception {
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("Joe", "Bloggs",
+				"1316761638"))
+			.willReturn(List.of(george()));
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "Joe")
+				.param("lastName", "Bloggs")
+				.param("address", "123 Caramel Street")
+				.param("city", "London")
+				.param("telephone", "1316761638"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(model().attributeHasErrors("owner"));
+	}
+
+	@Test
+	void testProcessCreationFormNoDuplicateSucceeds() throws Exception {
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("Joe", "Bloggs",
+				"1316761638"))
+			.willReturn(List.of());
+		mockMvc
+			.perform(post("/owners/new").param("firstName", "Joe")
+				.param("lastName", "Bloggs")
+				.param("address", "123 Caramel Street")
+				.param("city", "London")
+				.param("telephone", "1316761638"))
+			.andExpect(status().is3xxRedirection());
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormDuplicateRejected() throws Exception {
+		Owner existing = new Owner();
+		existing.setId(99);
+		existing.setFirstName("Joe");
+		existing.setLastName("Bloggs");
+		existing.setTelephone("1616291589");
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("Joe", "Bloggs",
+				"1616291589"))
+			.willReturn(List.of(existing));
+		mockMvc
+			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "Joe")
+				.param("lastName", "Bloggs")
+				.param("address", "123 Caramel Street")
+				.param("city", "London")
+				.param("telephone", "1616291589"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("owners/createOrUpdateOwnerForm"))
+			.andExpect(model().attributeHasErrors("owner"));
+	}
+
+	@Test
+	void testProcessUpdateOwnerFormSelfExclusionSucceeds() throws Exception {
+		Owner george = george();
+		given(this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase("George", "Franklin",
+				"6085551023"))
+			.willReturn(List.of(george));
+		mockMvc
+			.perform(post("/owners/{ownerId}/edit", TEST_OWNER_ID).param("firstName", "George")
+				.param("lastName", "Franklin")
+				.param("address", "110 W. Liberty St.")
+				.param("city", "Madison")
+				.param("telephone", "6085551023"))
+			.andExpect(status().is3xxRedirection())
+			.andExpect(view().name("redirect:/owners/{ownerId}"));
+	}
+
+	// === End 2.1 Duplicate Detection Acceptance Tests ===
+
 	@Test
 	public void testProcessUpdateOwnerFormWithIdMismatch() throws Exception {
 		int pathOwnerId = 1;

@@ -81,6 +81,11 @@ class OwnerController {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 
+		if (isDuplicate(owner, null)) {
+			result.reject("duplicate", "An owner with this name and telephone number already exists.");
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+		}
+
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "New Owner Created");
 		return "redirect:/owners/" + owner.getId();
@@ -160,10 +165,24 @@ class OwnerController {
 			return "redirect:/owners/{ownerId}/edit";
 		}
 
+		if (isDuplicate(owner, ownerId)) {
+			result.reject("duplicate", "An owner with this name and telephone number already exists.");
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+		}
+
 		owner.setId(ownerId);
 		this.owners.save(owner);
 		redirectAttributes.addFlashAttribute("message", "Owner Values Updated");
 		return "redirect:/owners/{ownerId}";
+	}
+
+	private boolean isDuplicate(Owner owner, Integer excludeId) {
+		List<Owner> matches = this.owners.findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndTelephoneIgnoreCase(
+				owner.getFirstName(), owner.getLastName(), owner.getTelephone());
+		if (excludeId == null) {
+			return !matches.isEmpty();
+		}
+		return matches.stream().anyMatch(m -> !Objects.equals(m.getId(), excludeId));
 	}
 
 	/**
