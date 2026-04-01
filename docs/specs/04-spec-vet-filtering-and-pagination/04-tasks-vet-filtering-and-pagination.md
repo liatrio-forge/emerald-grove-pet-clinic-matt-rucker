@@ -54,7 +54,7 @@ Add specialty filter to the Vet Directory with clickable pill buttons (All, each
 - [x] 1.9 **Write Playwright E2E test** `vet-filter.spec.ts` — test that pill buttons are visible, clicking a specialty pill filters the table, clicking "All" shows all vets, clicking "None" shows only vets without specialties, and the URL contains the filter param. Update `vet-page.ts` page object with `clickFilterPill(name)` and `activeFilterPill()` methods.
 - [x] 1.10 **Capture proof artifacts** — screenshot of Vet Directory with pill buttons, save to `docs/specs/04-spec-vet-filtering-and-pagination/04-proofs/`.
 
-### [ ] 2.0 Preserve Filter Across Vet Pagination
+### [x] 2.0 Preserve Filter Across Vet Pagination
 
 Fix pagination links on the Vet Directory to include the active `filter` query parameter. Ensure clean URLs when no filter is active. Maintain highlighted pill state after page navigation.
 
@@ -65,8 +65,8 @@ Fix pagination links on the Vet Directory to include the active `filter` query p
 
 #### 2.0 Tasks
 
-- [ ] 2.1 **Outer loop — write failing acceptance test** in `VetControllerTests`: verify that when `filter=radiology` is passed, the model contains the `filter` attribute value for pagination link construction.
-- [ ] 2.2 **Fix pagination in `vetList.html`** — update all pagination links to conditionally include `&filter=<value>` from the model when a filter is active. When no filter is active, omit the param for clean URLs.
-- [ ] 2.3 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
-- [ ] 2.4 **Write Playwright E2E test** `vet-pagination-filter.spec.ts` — apply a filter, navigate pagination, verify filter param persists in URL and active pill remains highlighted.
-- [ ] 2.5 **Capture proof artifacts** — save test output to `docs/specs/04-spec-vet-filtering-and-pagination/04-proofs/`.
+- [x] 2.1 **Outer loop — write failing acceptance test** in `VetControllerTests`: verify that when `filter=radiology` is passed, the model contains the `filter` attribute value for pagination link construction.
+- [x] 2.2 **Fix pagination in `vetList.html`** — update all pagination links to conditionally include `&filter=<value>` from the model when a filter is active. When no filter is active, omit the param for clean URLs.
+- [x] 2.3 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
+- [x] 2.4 **Write Playwright E2E test** `vet-pagination-filter.spec.ts` — apply a filter, navigate pagination, verify filter param persists in URL and active pill remains highlighted.
+- [x] 2.5 **Capture proof artifacts** — save test output to `docs/specs/04-spec-vet-filtering-and-pagination/04-proofs/`.

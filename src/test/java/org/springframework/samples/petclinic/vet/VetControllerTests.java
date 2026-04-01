@@ -171,4 +171,26 @@ class VetControllerTests {
 
 	// === End 1.1 Specialty Filter Acceptance Tests ===
 
+	// === 2.1 Pagination Filter Preservation Tests ===
+
+	@Test
+	void testPaginationModelContainsFilterForLinks() throws Exception {
+		given(this.vets.findBySpecialtyName(eq("radiology"), any(Pageable.class)))
+			.willReturn(new PageImpl<>(List.of(helen())));
+		mockMvc.perform(get("/vets.html?page=1&filter=radiology"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentFilter", "radiology"))
+			.andExpect(model().attributeExists("currentPage"))
+			.andExpect(model().attributeExists("totalPages"));
+	}
+
+	@Test
+	void testPaginationModelOmitsFilterWhenEmpty() throws Exception {
+		mockMvc.perform(get("/vets.html?page=1"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("currentFilter", ""));
+	}
+
+	// === End 2.1 Pagination Filter Preservation Tests ===
+
 }
