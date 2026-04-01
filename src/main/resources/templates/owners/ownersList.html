@@ -6,6 +6,12 @@
 
   <h2 th:text="#{owners}">Owners</h2>
 
+  <div class="mb-3">
+    <a class="btn btn-primary"
+      th:href="@{'/owners.csv?lastName=' + ${lastName} + '&telephone=' + ${telephone} + '&city=' + ${city}}"
+      id="export-csv" th:text="#{exportCsv}">Export CSV</a>
+  </div>
+
   <table id="owners" class="table table-striped liatrio-table">
     <thead>
       <tr>

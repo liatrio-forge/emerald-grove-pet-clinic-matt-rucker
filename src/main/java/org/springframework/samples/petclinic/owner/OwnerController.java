@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -198,6 +200,36 @@ class OwnerController {
 				"Owner not found with id: " + ownerId + ". Please ensure the ID is correct "));
 		mav.addObject(owner);
 		return mav;
+	}
+
+	@GetMapping("/owners.csv")
+	public void exportOwnersCsv(@RequestParam(defaultValue = "") String lastName,
+			@RequestParam(defaultValue = "") String telephone, @RequestParam(defaultValue = "") String city,
+			HttpServletResponse response) throws IOException {
+		response.setContentType("text/csv");
+		response.setHeader("Content-Disposition", "attachment; filename=\"owners.csv\"");
+
+		Page<Owner> results = this.owners.searchOwners(lastName, telephone, city, Pageable.unpaged());
+		StringBuilder csv = new StringBuilder();
+		csv.append("First Name,Last Name,Address,City,Telephone\n");
+		for (Owner owner : results.getContent()) {
+			csv.append(escapeCsv(owner.getFirstName())).append(',');
+			csv.append(escapeCsv(owner.getLastName())).append(',');
+			csv.append(escapeCsv(owner.getAddress())).append(',');
+			csv.append(escapeCsv(owner.getCity())).append(',');
+			csv.append(escapeCsv(owner.getTelephone())).append('\n');
+		}
+		response.getWriter().write(csv.toString());
+	}
+
+	private String escapeCsv(String value) {
+		if (value == null) {
+			return "";
+		}
+		if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+			return "\"" + value.replace("\"", "\"\"") + "\"";
+		}
+		return value;
 	}
 
 }

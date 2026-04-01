@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
@@ -401,5 +402,80 @@ class OwnerControllerTests {
 			.andExpect(redirectedUrl("/owners/" + pathOwnerId + "/edit"))
 			.andExpect(flash().attributeExists("error"));
 	}
+
+	// === 3.1 CSV Export Acceptance Tests ===
+
+	@Test
+	void testCsvExportContentTypeAndHeaders() throws Exception {
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(george())));
+		mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType("text/csv"))
+			.andExpect(header().string("Content-Disposition", "attachment; filename=\"owners.csv\""));
+	}
+
+	@Test
+	void testCsvExportHeaderRow() throws Exception {
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of()));
+		mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andExpect(
+					content().string(org.hamcrest.Matchers.startsWith("First Name,Last Name,Address,City,Telephone")));
+	}
+
+	@Test
+	void testCsvExportDataRows() throws Exception {
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(george())));
+		mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andExpect(content()
+				.string(org.hamcrest.Matchers.containsString("George,Franklin,110 W. Liberty St.,Madison,6085551023")));
+	}
+
+	@Test
+	void testCsvExportWithSearchParams() throws Exception {
+		when(this.owners.searchOwners(eq("Franklin"), eq(""), eq("Madison"), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(george())));
+		mockMvc.perform(get("/owners.csv").param("lastName", "Franklin").param("city", "Madison"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(org.hamcrest.Matchers.containsString("George,Franklin")));
+	}
+
+	@Test
+	void testCsvExportEmptyResult() throws Exception {
+		when(this.owners.searchOwners(eq("Nobody"), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of()));
+		String csv = mockMvc.perform(get("/owners.csv").param("lastName", "Nobody"))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse()
+			.getContentAsString();
+		// Should contain only the header row (plus newline)
+		assertThat(csv.trim().split("\n")).hasSize(1);
+	}
+
+	@Test
+	void testCsvExportEscapesCommasAndQuotes() throws Exception {
+		Owner ownerWithComma = new Owner();
+		ownerWithComma.setFirstName("Jane");
+		ownerWithComma.setLastName("O'Brien");
+		ownerWithComma.setAddress("123 Main St, Apt 4");
+		ownerWithComma.setCity("Springfield");
+		ownerWithComma.setTelephone("5551234567");
+		when(this.owners.searchOwners(eq(""), eq(""), eq(""), any(Pageable.class)))
+			.thenReturn(new PageImpl<>(List.of(ownerWithComma)));
+		String csv = mockMvc.perform(get("/owners.csv"))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse()
+			.getContentAsString();
+		// Address with comma should be quoted
+		assertThat(csv).contains("\"123 Main St, Apt 4\"");
+	}
+
+	// === End 3.1 CSV Export Acceptance Tests ===
 
 }

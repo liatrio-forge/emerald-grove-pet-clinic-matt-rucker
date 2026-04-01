@@ -87,4 +87,12 @@ export class OwnerPage extends BasePage {
     }
     await this.page.getByRole('button', { name: /Find Owner/i }).click();
   }
+
+  async clickExportCsv(): Promise<void> {
+    await this.page.locator('#export-csv').click();
+  }
+
+  exportCsvLink(): Locator {
+    return this.page.locator('#export-csv');
+  }
 }

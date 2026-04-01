@@ -71,7 +71,7 @@ Add duplicate detection to the owner creation and update flows. A duplicate is d
 - [x] 2.7 **Write Playwright E2E test** `owner-duplicate-detection.spec.ts` — create an owner, attempt to create the same owner again, verify error message appears, verify no second record was created (search should still return one result).
 - [x] 2.8 **Capture proof artifacts** — save test output and screenshot of duplicate error to `docs/specs/03-spec-owner-search-and-data-export/03-proofs/`.
 
-### [ ] 3.0 CSV Export of Owner Search Results
+### [x] 3.0 CSV Export of Owner Search Results
 
 Add a `GET /owners.csv` endpoint that exports all matching owners (unpaginated) as a CSV file with proper headers, escaping, and content type. Add an "Export CSV" button on the search results page that passes current search parameters to the CSV endpoint.
 
@@ -83,9 +83,9 @@ Add a `GET /owners.csv` endpoint that exports all matching owners (unpaginated) 
 
 #### 3.0 Tasks
 
-- [ ] 3.1 **Outer loop — write failing acceptance tests** in `OwnerControllerTests`: (a) `GET /owners.csv` returns `text/csv` content type and `Content-Disposition` header, (b) response includes header row `First Name,Last Name,Address,City,Telephone`, (c) response includes data rows matching search params, (d) values containing commas/quotes are properly escaped, (e) empty result returns header row only, (f) search params (`lastName`, `telephone`, `city`) filter the exported data.
-- [ ] 3.2 **Implement CSV export handler** in `OwnerController` — add `@GetMapping("/owners.csv")` method that accepts the same search params, calls the repository for ALL matching owners (no pagination), generates CSV string with proper escaping (RFC 4180), sets response headers, and writes the CSV body.
-- [ ] 3.3 **Add "Export CSV" button to `ownersList.html`** — add a button/link near the top of the results table that constructs a URL to `/owners.csv` with the current search params (`lastName`, `telephone`, `city`) from the model.
-- [ ] 3.4 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
-- [ ] 3.5 **Write Playwright E2E test** `owner-csv-export.spec.ts` — search for owners, click Export CSV, verify the downloaded file has correct content type and expected rows. Update `owner-page.ts` with `clickExportCsv()` method.
-- [ ] 3.6 **Capture proof artifacts** — save `curl` output demonstrating CSV download, save to `docs/specs/03-spec-owner-search-and-data-export/03-proofs/`.
+- [x] 3.1 **Outer loop — write failing acceptance tests** in `OwnerControllerTests`: (a) `GET /owners.csv` returns `text/csv` content type and `Content-Disposition` header, (b) response includes header row `First Name,Last Name,Address,City,Telephone`, (c) response includes data rows matching search params, (d) values containing commas/quotes are properly escaped, (e) empty result returns header row only, (f) search params (`lastName`, `telephone`, `city`) filter the exported data.
+- [x] 3.2 **Implement CSV export handler** in `OwnerController` — add `@GetMapping("/owners.csv")` method that accepts the same search params, calls the repository for ALL matching owners (no pagination), generates CSV string with proper escaping (RFC 4180), sets response headers, and writes the CSV body.
+- [x] 3.3 **Add "Export CSV" button to `ownersList.html`** — add a button/link near the top of the results table that constructs a URL to `/owners.csv` with the current search params (`lastName`, `telephone`, `city`) from the model.
+- [x] 3.4 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
+- [x] 3.5 **Write Playwright E2E test** `owner-csv-export.spec.ts` — search for owners, click Export CSV, verify the downloaded file has correct content type and expected rows. Update `owner-page.ts` with `clickExportCsv()` method.
+- [x] 3.6 **Capture proof artifacts** — save `curl` output demonstrating CSV download, save to `docs/specs/03-spec-owner-search-and-data-export/03-proofs/`.
