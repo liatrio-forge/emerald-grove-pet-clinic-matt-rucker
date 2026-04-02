@@ -49,7 +49,7 @@ Add `@FutureOrPresent` validation to the `Visit.date` field so that past dates a
 - [x] 1.4 **Write Playwright E2E test** `visit-date-validation.spec.ts` — navigate to a pet's visit form, enter a past date with valid description, submit, verify the form stays with a validation error message. Then enter today's date, submit, verify redirect to owner details.
 - [x] 1.5 **Capture proof artifacts** — save test output to `docs/specs/05-spec-visit-management/05-proofs/`.
 
-### [ ] 2.0 Upcoming Visits Page
+### [x] 2.0 Upcoming Visits Page
 
 Create a new read-only page at `/visits/upcoming` showing visits within the next N days (default 7). Add `VisitRepository` with date-range query, add `@ManyToOne Pet` to Visit entity, add nav item, paginate results with `days` param preserved across pages.
 
@@ -61,13 +61,13 @@ Create a new read-only page at `/visits/upcoming` showing visits within the next
 
 #### 2.0 Tasks
 
-- [ ] 2.1 **Outer loop — write failing acceptance tests** in new `UpcomingVisitsControllerTests`: (a) `GET /visits/upcoming` returns OK with default 7-day window and model contains `listVisits`, (b) `GET /visits/upcoming?days=14` uses custom window, (c) empty result set shows view with empty list, (d) model contains `days` attribute for pagination, (e) `GET /visits/upcoming?days=-1` falls back to default 7, (f) results are sorted by date ascending. All tests should fail.
-- [ ] 2.2 **Add `@ManyToOne Pet` relationship to `Visit.java`** — add a `pet` field with `@ManyToOne` and `@JoinColumn(name = "pet_id", insertable = false, updatable = false)` to avoid conflict with the existing Pet→Visit cascade. Add getter.
-- [ ] 2.3 **Create `VisitRepository`** — new interface extending `Repository<Visit, Integer>` with a `@Query` method `findUpcomingVisits(LocalDate start, LocalDate end, Pageable pageable)` that returns `Page<Visit>` joining through Pet to eager-fetch pet and owner data, sorted by date ascending.
-- [ ] 2.4 **Create `UpcomingVisitsController`** — new controller in the `owner` package handling `GET /visits/upcoming`. Accept optional `days` param (default 7, validate as positive integer with fallback), query `VisitRepository`, and pass results to the model with pagination attributes and the `days` value.
-- [ ] 2.5 **Create `upcomingVisits.html` template** — new Thymeleaf template displaying a table with columns: Date, Pet, Owner, Description. Show friendly "No upcoming visits scheduled" message when list is empty. Add pagination links that preserve the `days` parameter.
-- [ ] 2.6 **Add nav item to `layout.html`** — add an "Upcoming Visits" menu item between "Find Owners" and "Veterinarians" using the existing `menuItem` fragment pattern with a calendar icon (`fa fa-calendar`).
-- [ ] 2.7 **Add i18n keys** — add `upcomingVisits`, `noUpcomingVisits`, and any other new user-facing text keys to all `messages*.properties` files.
-- [ ] 2.8 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
-- [ ] 2.9 **Write Playwright E2E test** `upcoming-visits.spec.ts` — create a visit for today via the existing pet visit form, navigate to Upcoming Visits via the nav, verify the visit appears in the table with correct data. Create a page object for the upcoming visits page.
-- [ ] 2.10 **Capture proof artifacts** — save test output and screenshot to `docs/specs/05-spec-visit-management/05-proofs/`.
+- [x] 2.1 **Outer loop — write failing acceptance tests** in new `UpcomingVisitsControllerTests`: (a) `GET /visits/upcoming` returns OK with default 7-day window and model contains `listVisits`, (b) `GET /visits/upcoming?days=14` uses custom window, (c) empty result set shows view with empty list, (d) model contains `days` attribute for pagination, (e) `GET /visits/upcoming?days=-1` falls back to default 7, (f) results are sorted by date ascending. All tests should fail.
+- [x] 2.2 **Add `@ManyToOne Pet` relationship to `Visit.java`** — add a `pet` field with `@ManyToOne` and `@JoinColumn(name = "pet_id", insertable = false, updatable = false)` to avoid conflict with the existing Pet→Visit cascade. Add getter.
+- [x] 2.3 **Create `VisitRepository`** — new interface extending `Repository<Visit, Integer>` with a `@Query` method `findUpcomingVisits(LocalDate start, LocalDate end, Pageable pageable)` that returns `Page<Visit>` joining through Pet to eager-fetch pet and owner data, sorted by date ascending.
+- [x] 2.4 **Create `UpcomingVisitsController`** — new controller in the `owner` package handling `GET /visits/upcoming`. Accept optional `days` param (default 7, validate as positive integer with fallback), query `VisitRepository`, and pass results to the model with pagination attributes and the `days` value.
+- [x] 2.5 **Create `upcomingVisits.html` template** — new Thymeleaf template displaying a table with columns: Date, Pet, Owner, Description. Show friendly "No upcoming visits scheduled" message when list is empty. Add pagination links that preserve the `days` parameter.
+- [x] 2.6 **Add nav item to `layout.html`** — add an "Upcoming Visits" menu item between "Find Owners" and "Veterinarians" using the existing `menuItem` fragment pattern with a calendar icon (`fa fa-calendar`).
+- [x] 2.7 **Add i18n keys** — add `upcomingVisits`, `noUpcomingVisits`, and any other new user-facing text keys to all `messages*.properties` files.
+- [x] 2.8 **Inner loop — run tests, verify all pass** — run `./mvnw test` and confirm all new and existing tests pass.
+- [x] 2.9 **Write Playwright E2E test** `upcoming-visits.spec.ts` — create a visit for today via the existing pet visit form, navigate to Upcoming Visits via the nav, verify the visit appears in the table with correct data. Create a page object for the upcoming visits page.
+- [x] 2.10 **Capture proof artifacts** — save test output and screenshot to `docs/specs/05-spec-visit-management/05-proofs/`.

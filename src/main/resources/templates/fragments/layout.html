@@ -54,6 +54,11 @@
             <span th:text="#{findOwners}">Find owners</span>
           </li>
 
+          <li th:replace="~{::menuItem ('/visits/upcoming','upcomingVisits','upcoming visits','calendar',#{upcomingVisits})}">
+            <span class="fa fa-calendar" aria-hidden="true"></span>
+            <span th:text="#{upcomingVisits}">Upcoming Visits</span>
+          </li>
+
           <li th:replace="~{::menuItem ('/vets.html','vets','veterinarians','th-list',#{vets})}">
             <span class="fa fa-th-list" aria-hidden="true"></span>
             <span th:text="#{vets}">Veterinarians</span>

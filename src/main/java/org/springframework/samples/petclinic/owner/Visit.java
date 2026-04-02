@@ -22,6 +22,8 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -44,6 +46,10 @@ public class Visit extends BaseEntity {
 	@NotBlank
 	private String description;
 
+	@ManyToOne
+	@JoinColumn(name = "pet_id", insertable = false, updatable = false)
+	private Pet pet;
+
 	/**
 	 * Creates a new instance of Visit for the current date
 	 */
@@ -65,6 +71,14 @@ public class Visit extends BaseEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Pet getPet() {
+		return this.pet;
+	}
+
+	public void setPet(Pet pet) {
+		this.pet = pet;
 	}
 
 }

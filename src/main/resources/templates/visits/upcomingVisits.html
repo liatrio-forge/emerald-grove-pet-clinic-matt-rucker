@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'upcomingVisits')}">
+
+<body>
+
+  <section class="liatrio-section">
+    <div class="liatrio-table-card">
+      <div class="liatrio-card-header">
+        <h2 th:text="#{upcomingVisits}">Upcoming Visits</h2>
+      </div>
+
+      <div th:if="${#lists.isEmpty(listVisits)}" class="text-center p-4">
+        <p class="liatrio-muted" th:text="#{noUpcomingVisits}">No upcoming visits scheduled.</p>
+      </div>
+
+      <table th:unless="${#lists.isEmpty(listVisits)}" id="visits" class="table table-striped liatrio-table">
+        <thead>
+          <tr>
+            <th th:text="#{date}">Date</th>
+            <th th:text="#{pet}">Pet</th>
+            <th th:text="#{owner}">Owner</th>
+            <th th:text="#{description}">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="visit : ${listVisits}">
+            <td th:text="${#temporals.format(visit.date, 'yyyy-MM-dd')}"></td>
+            <td th:text="${visit.pet?.name}"></td>
+            <td th:text="${visit.pet?.owner != null ? visit.pet.owner.firstName + ' ' + visit.pet.owner.lastName : ''}"></td>
+            <td th:text="${visit.description}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div th:if="${totalPages > 1}" class="liatrio-pagination"
+    th:with="daysParam='&amp;days=' + ${days}">
+    <span th:text="#{pages}">Pages:</span>
+    <span>[</span>
+    <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+      <a th:if="${currentPage != i}" th:href="@{'/visits/upcoming?page=' + ${i} + ${daysParam}}">[[${i}]]</a>
+      <span th:unless="${currentPage != i}">[[${i}]]</span>
+    </span>
+    <span>]&nbsp;</span>
+    <span>
+      <a th:if="${currentPage > 1}" th:href="@{'/visits/upcoming?page=1' + ${daysParam}}" th:title="#{first}" class="fa fa-fast-backward"></a>
+      <span th:unless="${currentPage > 1}" th:title="#{first}" class="fa fa-fast-backward"></span>
+    </span>
+    <span>
+      <a th:if="${currentPage > 1}" th:href="@{'/visits/upcoming?page=__${currentPage - 1}__' + ${daysParam}}" th:title="#{previous}"
+        class="fa fa-step-backward"></a>
+      <span th:unless="${currentPage > 1}" th:title="#{previous}" class="fa fa-step-backward"></span>
+    </span>
+    <span>
+      <a th:if="${currentPage < totalPages}" th:href="@{'/visits/upcoming?page=__${currentPage + 1}__' + ${daysParam}}" th:title="#{next}"
+        class="fa fa-step-forward"></a>
+      <span th:unless="${currentPage < totalPages}" th:title="#{next}" class="fa fa-step-forward"></span>
+    </span>
+    <span>
+      <a th:if="${currentPage < totalPages}" th:href="@{'/visits/upcoming?page=__${totalPages}__' + ${daysParam}}" th:title="#{last}"
+        class="fa fa-fast-forward"></a>
+      <span th:unless="${currentPage < totalPages}" th:title="#{last}" class="fa fa-fast-forward"></span>
+    </span>
+  </div>
+</body>
+
+</html>
