@@ -101,6 +101,15 @@ public class Owner extends Person {
 	}
 
 	/**
+	 * Remove the Pet with the given id from this Owner.
+	 * @param petId the id of the pet to remove
+	 * @return true if the pet was found and removed, false otherwise
+	 */
+	public boolean removePet(Integer petId) {
+		return getPets().removeIf(pet -> Objects.equals(pet.getId(), petId));
+	}
+
+	/**
 	 * Return the Pet with the given name, or null if none found for this Owner.
 	 * @param name to test
 	 * @return the Pet with the given name, or null if no such Pet exists for this Owner

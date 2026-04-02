@@ -29,6 +29,14 @@
     </div>
   </form>
 
+  <div th:unless="${pet['new']}" class="mt-3">
+    <form th:action="@{/owners/__${owner.id}__/pets/__${pet.id}__/delete}" method="post"
+      th:with="visitCount=${pet.visits.size()},confirmMsg=${visitCount > 0 ? 'This pet has ' + visitCount + ' visit(s) that will also be deleted. Are you sure you want to delete ' + pet.name + '?' : 'Are you sure you want to delete ' + pet.name + '?'}"
+      onsubmit="return confirm(this.dataset.msg);" th:attr="data-msg=${confirmMsg}">
+      <button type="submit" class="btn btn-danger" th:text="#{deletePet}">Delete Pet</button>
+    </form>
+  </div>
+
 </body>
 
 </html>

@@ -157,6 +157,20 @@ class PetController {
 		return "redirect:/owners/{ownerId}";
 	}
 
+	@PostMapping("/pets/{petId}/delete")
+	public String processDeletePet(Owner owner, @PathVariable("petId") int petId,
+			RedirectAttributes redirectAttributes) {
+		Pet pet = owner.getPet(petId);
+		if (pet == null) {
+			redirectAttributes.addFlashAttribute("error", "Pet not found.");
+			return "redirect:/owners/{ownerId}";
+		}
+		owner.removePet(petId);
+		this.owners.save(owner);
+		redirectAttributes.addFlashAttribute("message", "Pet has been deleted");
+		return "redirect:/owners/{ownerId}";
+	}
+
 	/**
 	 * Updates the pet details if it exists or adds a new pet to the owner.
 	 * @param owner The owner of the pet
