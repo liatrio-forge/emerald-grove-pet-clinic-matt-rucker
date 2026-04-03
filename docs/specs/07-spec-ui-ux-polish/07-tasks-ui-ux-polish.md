@@ -41,7 +41,7 @@ Add a Bootstrap dropdown language selector to the navbar with all 9 available la
 - [ ] 1.5 **Write Playwright E2E test** `language-selector.spec.ts` — verify dropdown is visible, select German, verify German text appears, navigate to another page, verify language persists.
 - [ ] 1.6 **Capture proof artifacts** — save to `docs/specs/07-spec-ui-ux-polish/07-proofs/`.
 
-### [ ] 2.0 Friendly 404 for Missing Owner/Pet
+### [x] 2.0 Friendly 404 for Missing Owner/Pet
 
 Add `@ControllerAdvice` to catch `IllegalArgumentException` and return 404 status. Add "Back to Find Owners" link to the 404 section of error.html.
 
