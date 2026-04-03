@@ -15,6 +15,20 @@ The marker for this instruction is: 🤖
 **Read and comply with [`docs/constitution.md`](docs/constitution.md) before any implementation work.**
 The constitution defines immutable principles: test-first, library-first, simplicity, anti-abstraction, integration-first testing, proof artifacts, uncertainty markers, single-threaded execution, and conventional commits.
 
+## Mandatory Development Workflow: Spec-Driven Development (SDD)
+
+**All code changes must follow the Spec-Driven Development workflow. No exceptions.**
+
+1. **`/SDD-1-generate-spec`** — Generate specification with clarifying Q&A
+2. **`/SDD-2-generate-task-list-from-spec`** — Break spec into demoable tasks
+3. **`/analyze`** — Cross-artifact consistency check (quality gate before implementation)
+4. **`/SDD-3-manage-tasks`** — Execute tasks with dual-loop TDD
+5. **`/SDD-4-validate-spec-implementation`** — Validate implementation against spec
+
+The scope assessment in SDD-1 determines the appropriate level of detail (a CSS fix will have a simpler spec than a new feature), but **the stages must not be skipped**. Even bug fixes and "small" changes go through the workflow — the workflow protects against the kind of broken implementations that result from skipping design review and testing steps.
+
+**Available skills** (see `.claude/skills/`): `tdd`, `tdd-outer-loop`, `tdd-inner-loop`, `tdd-verify`, `analyze`, `constitution-check`, `context-check`
+
 ## Project Overview
 
 - **Framework**: Spring Boot 4.0 (Spring MVC, Spring Data JPA, Thymeleaf)

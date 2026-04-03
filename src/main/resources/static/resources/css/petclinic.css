@@ -9721,38 +9721,50 @@ strong {
 .liatrio-filter-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--liatrio-space-2);
-  margin-bottom: var(--liatrio-space-4);
-  padding: var(--liatrio-space-3);
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
   background: #1a1f23;
-  border-radius: var(--liatrio-radius-md);
-  border: 1px solid #333333; }
+  border-radius: 8px;
+  border: 1px solid #333333;
+}
 
-.liatrio-filter-pill {
+a.liatrio-filter-pill {
   display: inline-flex;
   align-items: center;
-  padding: 6px 16px;
+  padding: 6px 18px;
   font-size: 13px;
   font-weight: 500;
+  line-height: 1.4;
   text-decoration: none;
   border: 1px solid #333333;
-  border-radius: var(--liatrio-radius-sm);
+  border-radius: 9999px;
   background: transparent;
   color: #b3b3b3;
-  margin-top: 0;
-  transition: all 0.15s ease; }
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
 
-.liatrio-filter-pill:hover {
+a.liatrio-filter-pill:hover {
   color: #f8f9fa;
-  border-color: #24AE1D;
-  background: rgba(36, 174, 29, 0.1); }
+  border-color: #555555;
+  background: transparent;
+  text-decoration: none;
+}
 
-.liatrio-filter-pill--active,
-.liatrio-filter-pill--active:hover {
-  background: #24AE1D;
+a.liatrio-filter-pill:focus-visible {
+  outline: 2px solid #24AE1D;
+  outline-offset: 2px;
+}
+
+a.liatrio-filter-pill.liatrio-filter-pill--active,
+a.liatrio-filter-pill.liatrio-filter-pill--active:hover {
   border-color: #24AE1D;
-  color: #111111;
+  color: #24AE1D;
+  background: transparent;
   font-weight: 600;
-  margin-top: 0; }
+  margin: 0;
+}
 
 /*# sourceMappingURL=../../../../../../target/petclinic.css.map */
