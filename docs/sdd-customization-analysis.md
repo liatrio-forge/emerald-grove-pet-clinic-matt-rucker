@@ -279,6 +279,43 @@ The stock SDD-1 prompt includes scope examples where changes are "too small" for
 
 ---
 
+## Why Context Window Management Is the Wrong Variable
+
+A common response to AI instruction drift is to reduce the context window or start fresh conversations more frequently. This is optimizing the wrong variable.
+
+### Smaller windows don't solve the problem
+
+1. **Smaller window = more frequent resets = more re-reading files = same vulnerability.** A fresh conversation still loads CLAUDE.md, constitution, DEVELOPMENT.md, etc. — and "Lost in the Middle" research applies to those loaded files too, not just conversation history. If the constitution is file #3 of 5 loaded docs, it's already in the middle.
+
+2. **The failure mode isn't "too many tokens."** The failure mode is "AI rationalizes skipping steps." That happens at token 1,000 just as easily as at token 500,000. During the filter pill incident, the AI didn't skip the workflow because it forgot the rules — it skipped because it judged (incorrectly) that the rules didn't apply. That's a discipline problem, not a memory problem.
+
+3. **Enforcement layers work regardless of context size.** The constitution gets re-read from disk by the analyze skill. The SDD commands inject fresh prompts. The context-check runs at defined checkpoints. These work the same at 10K tokens as at 500K tokens.
+
+### Evidence from this session
+
+This session ran to 535K tokens — 9 specs, 12 issues, ~20 PRs. One failure occurred.
+
+| What the AI "forgot" | Was it actually forgotten? | What caught it |
+|---|---|---|
+| SDD workflow for filter pills | No — AI chose to skip it | User caught it; led to mandatory SDD declaration |
+| Frontend design skills | No — AI chose to skip them | User caught it; led to Article 10 |
+| Style guide reference | Didn't exist yet | The redo's web-design-guidelines review revealed the gap |
+
+None of these were memory failures. They were **judgment failures** — the AI deciding it knew better than the process. The skills and constitution articles fix this by removing judgment from the equation. The analyze gate doesn't ask "do you think you should check the constitution?" — it checks it every time, mechanically.
+
+### The right architecture
+
+The investment in enforcement layers (constitution, analyze gate, context-check integration, mandatory SDD declaration) is the correct approach. The workflow handles context management for the user through:
+
+- **Re-injection**: Each SDD stage command injects fresh instructions (~2-3K tokens)
+- **Disk reads**: The analyze skill re-reads the constitution from disk, not from compressed conversation history
+- **Checkpoint self-assessment**: Context-check runs before and between parent tasks in SDD-3
+- **Mechanical compliance**: Skills check the constitution every time, regardless of what the AI "remembers"
+
+Users should not have to manage context windows. The flow should handle it for them — and it does.
+
+---
+
 ## Appendix: Project Statistics
 
 - **Specs completed**: 9 (03 through 09, plus 2 pre-existing)
