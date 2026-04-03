@@ -11,16 +11,16 @@
         <p class="liatrio-muted" th:text="#{vets.subtitle}">A snapshot of the care team and specialties.</p>
       </div>
 
-      <div class="mb-3" id="specialty-filters">
-        <a th:href="@{/vets.html}" class="btn btn-sm me-1"
-          th:classappend="${#strings.isEmpty(currentFilter)} ? 'btn-primary' : 'btn-outline-primary'"
+      <div class="liatrio-filter-bar" id="specialty-filters">
+        <a th:href="@{/vets.html}" class="liatrio-filter-pill"
+          th:classappend="${#strings.isEmpty(currentFilter)} ? ' liatrio-filter-pill--active'"
           th:text="#{filterAll}">All</a>
         <a th:each="specialty : ${specialties}"
-          th:href="@{/vets.html(filter=${specialty.name})}" class="btn btn-sm me-1"
-          th:classappend="${#strings.equalsIgnoreCase(currentFilter, specialty.name)} ? 'btn-primary' : 'btn-outline-primary'"
+          th:href="@{/vets.html(filter=${specialty.name})}" class="liatrio-filter-pill"
+          th:classappend="${#strings.equalsIgnoreCase(currentFilter, specialty.name)} ? ' liatrio-filter-pill--active'"
           th:text="${specialty.name}">Specialty</a>
-        <a th:href="@{/vets.html(filter='none')}" class="btn btn-sm me-1"
-          th:classappend="${#strings.equalsIgnoreCase(currentFilter, 'none')} ? 'btn-primary' : 'btn-outline-primary'"
+        <a th:href="@{/vets.html(filter='none')}" class="liatrio-filter-pill"
+          th:classappend="${#strings.equalsIgnoreCase(currentFilter, 'none')} ? ' liatrio-filter-pill--active'"
           th:text="#{filterNone}">None</a>
       </div>
 
