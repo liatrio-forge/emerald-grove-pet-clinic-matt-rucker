@@ -15,7 +15,11 @@
         <span th:case="*" th:text="#{error.general}">An unexpected error occurred.</span>
       </p>
 
-      <p class="liatrio-muted" th:text="${message}">Exception message</p>
+      <p th:if="${status == 404}" class="mt-3">
+        <a th:href="@{/owners/find}" class="btn btn-primary" th:text="#{backToFindOwners}">Back to Find Owners</a>
+      </p>
+
+      <p class="liatrio-muted" th:if="${status != 404}" th:text="${message}">Exception message</p>
     </div>
   </section>
 </body>

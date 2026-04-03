@@ -70,6 +70,23 @@
             <span th:text="#{error}">Error</span>
           </li>
 
+          <li class="nav-item dropdown" id="language-selector">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="fa fa-globe"></span>
+              <span th:text="${#locale.displayLanguage}">English</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'en'} ? ' active'" th:href="@{''(lang='en')}" th:text="'English'">English</a></li>
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'de'} ? ' active'" th:href="@{''(lang='de')}" th:text="'Deutsch'">Deutsch</a></li>
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'es'} ? ' active'" th:href="@{''(lang='es')}" th:text="'Español'">Español</a></li>
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'fa'} ? ' active'" th:href="@{''(lang='fa')}" th:text="'فارسی'">فارسی</a></li>
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'ko'} ? ' active'" th:href="@{''(lang='ko')}" th:text="'한국어'">한국어</a></li>
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'pt'} ? ' active'" th:href="@{''(lang='pt')}" th:text="'Português'">Português</a></li>
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'ru'} ? ' active'" th:href="@{''(lang='ru')}" th:text="'Русский'">Русский</a></li>
+              <li><a class="dropdown-item" th:classappend="${#locale.language == 'tr'} ? ' active'" th:href="@{''(lang='tr')}" th:text="'Türkçe'">Türkçe</a></li>
+            </ul>
+          </li>
+
         </ul>
       </div>
     </div>
