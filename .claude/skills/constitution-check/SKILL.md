@@ -68,6 +68,11 @@ For each constitutional article, evaluate compliance:
 - Status: PASS / FAIL / N/A
 - Evidence: [what you observed]
 - Justification: [why it passes or fails]
+
+### Article 10: Frontend Visual Compliance
+- Status: PASS / FAIL / N/A
+- Evidence: [what you observed — does the change have visual impact? is there a style guide? was web-design-guidelines used?]
+- Justification: [why it passes or fails. If no style guide exists and the change is visual, this MUST FAIL with recommendation to create docs/STYLE_GUIDE.md]
 ```
 
 ### Step 4: Verdict

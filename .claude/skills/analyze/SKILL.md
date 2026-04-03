@@ -59,6 +59,7 @@ Check the task breakdown against each constitutional article:
 - [ ] **Integration-First** (Art. 5): Test strategy favors integration tests
 - [ ] **Proof Artifacts** (Art. 6): Each task has defined proof artifacts
 - [ ] **Single-Threaded** (Art. 8): Tasks are ordered for sequential execution of demoable slices
+- [ ] **Frontend Visual Compliance** (Art. 10): If the spec includes visual changes (templates, CSS, UI), verify: (a) tasks reference the project style guide (`docs/STYLE_GUIDE.md`) — if no style guide exists, flag as FAIL and recommend prompting the user to create one, (b) tasks include a `web-design-guidelines` review step, (c) tasks include a `frontend-design` skill usage step for new components, (d) proof artifacts include visual verification (screenshots or Playwright visual tests)
 
 ### Step 5: Unresolved Markers
 

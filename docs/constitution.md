@@ -78,3 +78,14 @@ All commits follow the [Conventional Commits](https://www.conventionalcommits.or
 - Format: `type(scope): description`
 - Types: `feat`, `fix`, `test`, `docs`, `refactor`, `chore`, `ci`
 - Each commit should be atomic — one logical change per commit
+
+## Article 10: Frontend Visual Compliance
+
+Any change with visual impact must follow frontend UI/UX best practices and adhere to the project style guide.
+
+- Changes that modify templates, CSS, or any user-facing rendering must be reviewed against the project style guide (`docs/STYLE_GUIDE.md`)
+- If no style guide exists, the AI must **pause implementation and prompt the user** to create one before proceeding. Guide the user through documenting: color palette, typography, spacing scale, component patterns, and interaction states
+- Use the `web-design-guidelines` skill to audit visual changes for accessibility compliance (WCAG AA contrast, focus-visible states, semantic HTML)
+- Use the `frontend-design` skill when building new UI components
+- Visual changes without a style guide reference or design review are not considered complete
+- "It compiles and the tests pass" is not sufficient for frontend work — visual correctness must be verified
