@@ -61,7 +61,26 @@ Check the task breakdown against each constitutional article:
 - [ ] **Single-Threaded** (Art. 8): Tasks are ordered for sequential execution of demoable slices
 - [ ] **Frontend Visual Compliance** (Art. 10): If the spec includes visual changes (templates, CSS, UI), verify: (a) tasks reference the project style guide (`docs/STYLE_GUIDE.md`) — if no style guide exists, flag as FAIL and recommend prompting the user to create one, (b) tasks include a `web-design-guidelines` review step, (c) tasks include a `frontend-design` skill usage step for new components, (d) proof artifacts include visual verification (screenshots or Playwright visual tests)
 
-### Step 5: Unresolved Markers
+### Step 5: Context Health Check
+
+Run the `context-check` skill inline to verify the AI has not lost its SDD stage instructions:
+
+- [ ] Expected SDD stage marker is present in recent responses
+- [ ] Workflow rules are being followed (not skipping steps)
+- [ ] No signs of topic drift or constitution violations
+- [ ] If degradation detected: report it in the analysis and recommend re-anchoring before proceeding to implementation
+
+Report:
+
+```markdown
+## Context Health
+- Expected stage: SDD2 → SDD3 transition
+- Marker present: YES / NO
+- Workflow adherence: YES / PARTIAL / NO
+- Recommendation: HEALTHY / DEGRADED (re-invoke stage) / LOST (new conversation)
+```
+
+### Step 6: Unresolved Markers
 
 Scan all artifacts for:
 
@@ -69,7 +88,7 @@ Scan all artifacts for:
 - `[TBD]` or `[TODO]` markers
 - Ambiguous language ("might", "could", "possibly", "optionally")
 
-### Step 6: Generate Report
+### Step 7: Generate Report
 
 ```markdown
 # Cross-Artifact Analysis: [Feature Name]
