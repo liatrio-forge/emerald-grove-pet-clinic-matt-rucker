@@ -43,6 +43,7 @@ The scope assessment in SDD-1 determines the appropriate level of detail (a CSS 
 - @docs/ARCHITECTURE.md — **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and technical decisions
 - @docs/PRECOMMIT.md — **[Pre-commit Guide](docs/PRECOMMIT.md)** - Hook configuration, usage, and troubleshooting
 - @docs/constitution.md — **[Constitution](docs/constitution.md)** - Immutable governance principles
+- @docs/STYLE_GUIDE.md — **[Style Guide](docs/STYLE_GUIDE.md)** - Visual design system (colors, typography, components)
 
 ## TDD Requirements
 
