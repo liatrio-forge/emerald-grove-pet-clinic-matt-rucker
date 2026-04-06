@@ -62,7 +62,7 @@ Set up the Spring AI 2.0.0-M4 dependency with Anthropic starter, configure the A
 - [x] 1.6 Run `./mvnw compile` and verify it succeeds with all dependencies resolved
 - [x] 1.7 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
 
-### [ ] 2.0 Read-Only Assistant Tools with Unit Tests
+### [x] 2.0 Read-Only Assistant Tools with Unit Tests
 
 Implement the 6 read-only `@Tool` methods in `AssistantTools.java` and the `ChatClient` configuration in `AssistantConfiguration.java`. All tools return formatted Strings and are tested with mocked repositories following TDD.
 
@@ -73,22 +73,22 @@ Implement the 6 read-only `@Tool` methods in `AssistantTools.java` and the `Chat
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Create `AssistantTools.java` as a `@Component` in `src/main/java/.../assistant/` with constructor injection of `OwnerRepository`, `VetRepository`, `VisitRepository`, and `PetTypeRepository`
-- [ ] 2.2 Write a failing test for `searchOwners` tool: mock `OwnerRepository.searchOwners()` returning a page of owners, verify the tool returns a formatted string with owner names and IDs
-- [ ] 2.3 Implement the `searchOwners` `@Tool` method: accept optional `lastName`, `telephone`, `city` parameters (empty string = any), call `OwnerRepository.searchOwners()` with `PageRequest.of(0, 10)`, return formatted string with name, city, telephone, and link `/owners/{id}` for each result
-- [ ] 2.4 Write a failing test for `getOwnerDetails` tool: mock `OwnerRepository.findById()` returning an owner with pets and visits, verify the tool returns formatted details including pet names, types, and visit dates
-- [ ] 2.5 Implement the `getOwnerDetails` `@Tool` method: accept `ownerId`, call `OwnerRepository.findById()`, return formatted string with owner info, each pet (name, type, birth date), each pet's visits (date, description), and link to `/owners/{id}`. Return "Owner not found" if not present.
-- [ ] 2.6 Write a failing test for `listVets` tool: mock `VetRepository.findAll()` returning vets with specialties, verify formatted output
-- [ ] 2.7 Implement the `listVets` `@Tool` method: call `VetRepository.findAll()`, return formatted string listing each vet with their specialties
-- [ ] 2.8 Write a failing test for `findVetsBySpecialty` tool: mock `VetRepository.findBySpecialtyName()`, verify filtered results
-- [ ] 2.9 Implement the `findVetsBySpecialty` `@Tool` method: accept `specialtyName`, call `VetRepository.findBySpecialtyName()`, return formatted results
-- [ ] 2.10 Write a failing test for `listPetTypes` tool: mock `PetTypeRepository.findPetTypes()`, verify formatted list
-- [ ] 2.11 Implement the `listPetTypes` `@Tool` method: call `PetTypeRepository.findPetTypes()`, return formatted list of type names
-- [ ] 2.12 Write a failing test for `getUpcomingVisits` tool: mock `VisitRepository.findUpcomingVisits()`, verify formatted visit list with pet and owner info
-- [ ] 2.13 Implement the `getUpcomingVisits` `@Tool` method: accept `days` parameter, calculate date range from today, call `VisitRepository.findUpcomingVisits()` with `PageRequest.of(0, 20)`, return formatted list
-- [ ] 2.14 Create `AssistantConfiguration.java` as a `@Configuration` class that produces a `ChatClient` bean using `ChatClient.Builder`, set the system prompt (pet-owner-facing, friendly tone, include confirmation instruction for future write tools), and register `AssistantTools` via `.defaultTools()`
-- [ ] 2.15 Run `./mvnw test -Dtest=AssistantToolsTests` and verify all read-tool tests pass
-- [ ] 2.16 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
+- [x] 2.1 Create `AssistantTools.java` as a `@Component` in `src/main/java/.../assistant/` with constructor injection of `OwnerRepository`, `VetRepository`, `VisitRepository`, and `PetTypeRepository`
+- [x] 2.2 Write a failing test for `searchOwners` tool: mock `OwnerRepository.searchOwners()` returning a page of owners, verify the tool returns a formatted string with owner names and IDs
+- [x] 2.3 Implement the `searchOwners` `@Tool` method: accept optional `lastName`, `telephone`, `city` parameters (empty string = any), call `OwnerRepository.searchOwners()` with `PageRequest.of(0, 10)`, return formatted string with name, city, telephone, and link `/owners/{id}` for each result
+- [x] 2.4 Write a failing test for `getOwnerDetails` tool: mock `OwnerRepository.findById()` returning an owner with pets and visits, verify the tool returns formatted details including pet names, types, and visit dates
+- [x] 2.5 Implement the `getOwnerDetails` `@Tool` method: accept `ownerId`, call `OwnerRepository.findById()`, return formatted string with owner info, each pet (name, type, birth date), each pet's visits (date, description), and link to `/owners/{id}`. Return "Owner not found" if not present.
+- [x] 2.6 Write a failing test for `listVets` tool: mock `VetRepository.findAll()` returning vets with specialties, verify formatted output
+- [x] 2.7 Implement the `listVets` `@Tool` method: call `VetRepository.findAll()`, return formatted string listing each vet with their specialties
+- [x] 2.8 Write a failing test for `findVetsBySpecialty` tool: mock `VetRepository.findBySpecialtyName()`, verify filtered results
+- [x] 2.9 Implement the `findVetsBySpecialty` `@Tool` method: accept `specialtyName`, call `VetRepository.findBySpecialtyName()`, return formatted results
+- [x] 2.10 Write a failing test for `listPetTypes` tool: mock `PetTypeRepository.findPetTypes()`, verify formatted list
+- [x] 2.11 Implement the `listPetTypes` `@Tool` method: call `PetTypeRepository.findPetTypes()`, return formatted list of type names
+- [x] 2.12 Write a failing test for `getUpcomingVisits` tool: mock `VisitRepository.findUpcomingVisits()`, verify formatted visit list with pet and owner info
+- [x] 2.13 Implement the `getUpcomingVisits` `@Tool` method: accept `days` parameter, calculate date range from today, call `VisitRepository.findUpcomingVisits()` with `PageRequest.of(0, 20)`, return formatted list
+- [x] 2.14 Create `AssistantConfiguration.java` as a `@Configuration` class that produces a `ChatClient` bean using `ChatClient.Builder`, set the system prompt (pet-owner-facing, friendly tone, include confirmation instruction for future write tools), and register `AssistantTools` via `.defaultTools()`
+- [x] 2.15 Run `./mvnw test -Dtest=AssistantToolsTests` and verify all read-tool tests pass
+- [x] 2.16 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
 
 ### [ ] 3.0 Write Tools with Confirmation and Validation
 
