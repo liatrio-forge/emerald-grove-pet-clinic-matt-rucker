@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.assistant;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -193,6 +194,95 @@ public class AssistantTools {
 			sb.append("\n");
 		}
 		return sb.toString();
+	}
+
+	@Tool(description = "Create a new pet owner. Telephone must be exactly 10 digits.")
+	public String createOwner(@ToolParam(description = "First name") String firstName,
+			@ToolParam(description = "Last name") String lastName,
+			@ToolParam(description = "Street address") String address, @ToolParam(description = "City") String city,
+			@ToolParam(description = "10-digit telephone number") String telephone) {
+		if (telephone == null || !telephone.matches("\\d{10}")) {
+			return "Error: Telephone must be exactly 10 digits (e.g., 6085551023).";
+		}
+		Owner owner = new Owner();
+		owner.setFirstName(firstName);
+		owner.setLastName(lastName);
+		owner.setAddress(address);
+		owner.setCity(city);
+		owner.setTelephone(telephone);
+		this.ownerRepository.save(owner);
+		return "Owner created: " + firstName + " " + lastName + " (ID: " + owner.getId() + "). View details: /owners/"
+				+ owner.getId();
+	}
+
+	@Tool(description = "Add a pet to an existing owner. Use listPetTypes first to see valid pet type names.")
+	public String addPetToOwner(@ToolParam(description = "The owner's ID") Integer ownerId,
+			@ToolParam(description = "Name for the pet") String petName,
+			@ToolParam(description = "Pet type name (e.g., cat, dog)") String petTypeName,
+			@ToolParam(description = "Birth date in yyyy-MM-dd format") String birthDate) {
+		Optional<Owner> optOwner = this.ownerRepository.findById(ownerId);
+		if (optOwner.isEmpty()) {
+			return "Error: Owner not found with ID " + ownerId;
+		}
+		List<PetType> types = this.petTypeRepository.findPetTypes();
+		PetType matchedType = types.stream()
+			.filter(t -> t.getName().equalsIgnoreCase(petTypeName))
+			.findFirst()
+			.orElse(null);
+		if (matchedType == null) {
+			String available = types.stream().map(PetType::getName).collect(Collectors.joining(", "));
+			return "Error: Unknown pet type '" + petTypeName + "'. Available types: " + available;
+		}
+		LocalDate parsedDate;
+		try {
+			parsedDate = LocalDate.parse(birthDate);
+		}
+		catch (DateTimeParseException ex) {
+			return "Error: Invalid date format '" + birthDate + "'. Use yyyy-MM-dd (e.g., 2020-01-15).";
+		}
+		Owner owner = optOwner.get();
+		Pet pet = new Pet();
+		pet.setName(petName);
+		pet.setType(matchedType);
+		pet.setBirthDate(parsedDate);
+		owner.addPet(pet);
+		this.ownerRepository.save(owner);
+		return "Pet '" + petName + "' added to " + owner.getFirstName() + " " + owner.getLastName()
+				+ ". View details: /owners/" + ownerId;
+	}
+
+	@Tool(description = "Book a visit for a pet. The date must be today or in the future.")
+	public String bookVisit(@ToolParam(description = "The owner's ID") Integer ownerId,
+			@ToolParam(description = "The pet's ID") Integer petId,
+			@ToolParam(description = "Visit date in yyyy-MM-dd format") String date,
+			@ToolParam(description = "Description of the visit reason") String description) {
+		Optional<Owner> optOwner = this.ownerRepository.findById(ownerId);
+		if (optOwner.isEmpty()) {
+			return "Error: Owner not found with ID " + ownerId;
+		}
+		Owner owner = optOwner.get();
+		Pet pet = owner.getPet(petId);
+		if (pet == null) {
+			return "Error: Pet not found with ID " + petId + " for owner " + owner.getFirstName() + " "
+					+ owner.getLastName();
+		}
+		LocalDate parsedDate;
+		try {
+			parsedDate = LocalDate.parse(date);
+		}
+		catch (DateTimeParseException ex) {
+			return "Error: Invalid date format '" + date + "'. Use yyyy-MM-dd (e.g., 2025-06-15).";
+		}
+		if (parsedDate.isBefore(LocalDate.now())) {
+			return "Error: Visit date must be today or in the future. '" + date + "' is in the past.";
+		}
+		Visit visit = new Visit();
+		visit.setDate(parsedDate);
+		visit.setDescription(description);
+		owner.addVisit(petId, visit);
+		this.ownerRepository.save(owner);
+		return "Visit booked for " + pet.getName() + " on " + date + ": " + description + ". View details: /owners/"
+				+ ownerId;
 	}
 
 }

@@ -90,7 +90,7 @@ Implement the 6 read-only `@Tool` methods in `AssistantTools.java` and the `Chat
 - [x] 2.15 Run `./mvnw test -Dtest=AssistantToolsTests` and verify all read-tool tests pass
 - [x] 2.16 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
 
-### [ ] 3.0 Write Tools with Confirmation and Validation
+### [x] 3.0 Write Tools with Confirmation and Validation
 
 Implement the 3 write `@Tool` methods (`createOwner`, `addPetToOwner`, `bookVisit`) with input validation and error messages. Test all write tools including edge cases.
 
@@ -101,17 +101,17 @@ Implement the 3 write `@Tool` methods (`createOwner`, `addPetToOwner`, `bookVisi
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Write a failing test for `createOwner` happy path: verify it calls `OwnerRepository.save()` with correct fields and returns success message with link to new owner
-- [ ] 3.2 Write a failing test for `createOwner` validation: verify it returns an error message when telephone is not exactly 10 digits
-- [ ] 3.3 Implement the `createOwner` `@Tool` method: accept `firstName`, `lastName`, `address`, `city`, `telephone`; validate telephone is 10 digits; create and save Owner; return success message with link `/owners/{id}`
-- [ ] 3.4 Write a failing test for `addPetToOwner` happy path: mock owner lookup and pet type lookup, verify `owner.addPet()` is called and owner is saved
-- [ ] 3.5 Write failing tests for `addPetToOwner` edge cases: owner not found, unknown pet type name, invalid date format
-- [ ] 3.6 Implement the `addPetToOwner` `@Tool` method: accept `ownerId`, `petName`, `petTypeName`, `birthDate` (yyyy-MM-dd); look up owner and pet type; validate inputs; call `owner.addPet(pet)` then `owners.save(owner)`; return success or error message
-- [ ] 3.7 Write a failing test for `bookVisit` happy path: mock owner lookup, verify visit is created with correct date and description
-- [ ] 3.8 Write failing tests for `bookVisit` edge cases: owner not found, pet not found on owner, date in the past, invalid date format
-- [ ] 3.9 Implement the `bookVisit` `@Tool` method: accept `ownerId`, `petId`, `date` (yyyy-MM-dd), `description`; look up owner and pet; validate date is today or future; call `owner.addVisit(petId, visit)` then `owners.save(owner)`; return success or error message
-- [ ] 3.10 Run `./mvnw test` and verify the full test suite passes (including all existing tests)
-- [ ] 3.11 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
+- [x] 3.1 Write a failing test for `createOwner` happy path: verify it calls `OwnerRepository.save()` with correct fields and returns success message with link to new owner
+- [x] 3.2 Write a failing test for `createOwner` validation: verify it returns an error message when telephone is not exactly 10 digits
+- [x] 3.3 Implement the `createOwner` `@Tool` method: accept `firstName`, `lastName`, `address`, `city`, `telephone`; validate telephone is 10 digits; create and save Owner; return success message with link `/owners/{id}`
+- [x] 3.4 Write a failing test for `addPetToOwner` happy path: mock owner lookup and pet type lookup, verify `owner.addPet()` is called and owner is saved
+- [x] 3.5 Write failing tests for `addPetToOwner` edge cases: owner not found, unknown pet type name, invalid date format
+- [x] 3.6 Implement the `addPetToOwner` `@Tool` method: accept `ownerId`, `petName`, `petTypeName`, `birthDate` (yyyy-MM-dd); look up owner and pet type; validate inputs; call `owner.addPet(pet)` then `owners.save(owner)`; return success or error message
+- [x] 3.7 Write a failing test for `bookVisit` happy path: mock owner lookup, verify visit is created with correct date and description
+- [x] 3.8 Write failing tests for `bookVisit` edge cases: owner not found, pet not found on owner, date in the past, invalid date format
+- [x] 3.9 Implement the `bookVisit` `@Tool` method: accept `ownerId`, `petId`, `date` (yyyy-MM-dd), `description`; look up owner and pet; validate date is today or future; call `owner.addVisit(petId, visit)` then `owners.save(owner)`; return success or error message
+- [x] 3.10 Run `./mvnw test` and verify the full test suite passes (including all existing tests)
+- [x] 3.11 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
 
 ### [ ] 4.0 Chat Widget, Controller, and E2E Test
 

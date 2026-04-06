@@ -238,6 +238,164 @@ class AssistantToolsTests {
 		assertThat(result).contains("No upcoming visits");
 	}
 
+	// --- createOwner ---
+
+	@Test
+	void createOwnerShouldSaveAndReturnSuccessMessage() {
+		given(this.ownerRepository.save(any(Owner.class))).willAnswer(invocation -> {
+			Owner saved = invocation.getArgument(0);
+			saved.setId(42);
+			return saved;
+		});
+
+		String result = this.tools.createOwner("Joe", "Bloggs", "123 Main St", "London", "1316761638");
+
+		assertThat(result).contains("Owner created");
+		assertThat(result).contains("Joe Bloggs");
+		assertThat(result).contains("/owners/42");
+	}
+
+	@Test
+	void createOwnerShouldRejectInvalidTelephone() {
+		String result = this.tools.createOwner("Joe", "Bloggs", "123 Main St", "London", "123");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("10 digits");
+	}
+
+	@Test
+	void createOwnerShouldRejectNullTelephone() {
+		String result = this.tools.createOwner("Joe", "Bloggs", "123 Main St", "London", null);
+
+		assertThat(result).contains("Error");
+	}
+
+	// --- addPetToOwner ---
+
+	@Test
+	void addPetToOwnerShouldAddPetAndSave() {
+		Owner owner = createOwner(1, "George", "Franklin", "Madison", "6085551023");
+		PetType dog = new PetType();
+		dog.setName("dog");
+		given(this.ownerRepository.findById(1)).willReturn(Optional.of(owner));
+		given(this.petTypeRepository.findPetTypes()).willReturn(List.of(dog));
+		given(this.ownerRepository.save(any(Owner.class))).willReturn(owner);
+
+		String result = this.tools.addPetToOwner(1, "Rex", "dog", "2021-03-15");
+
+		assertThat(result).contains("Pet 'Rex' added");
+		assertThat(result).contains("George Franklin");
+		assertThat(result).contains("/owners/1");
+	}
+
+	@Test
+	void addPetToOwnerShouldReturnErrorWhenOwnerNotFound() {
+		given(this.ownerRepository.findById(999)).willReturn(Optional.empty());
+
+		String result = this.tools.addPetToOwner(999, "Rex", "dog", "2021-03-15");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("Owner not found");
+	}
+
+	@Test
+	void addPetToOwnerShouldReturnErrorForUnknownPetType() {
+		Owner owner = createOwner(1, "George", "Franklin", "Madison", "6085551023");
+		PetType cat = new PetType();
+		cat.setName("cat");
+		given(this.ownerRepository.findById(1)).willReturn(Optional.of(owner));
+		given(this.petTypeRepository.findPetTypes()).willReturn(List.of(cat));
+
+		String result = this.tools.addPetToOwner(1, "Rex", "dragon", "2021-03-15");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("Unknown pet type");
+		assertThat(result).contains("dragon");
+	}
+
+	@Test
+	void addPetToOwnerShouldReturnErrorForInvalidDate() {
+		Owner owner = createOwner(1, "George", "Franklin", "Madison", "6085551023");
+		PetType dog = new PetType();
+		dog.setName("dog");
+		given(this.ownerRepository.findById(1)).willReturn(Optional.of(owner));
+		given(this.petTypeRepository.findPetTypes()).willReturn(List.of(dog));
+
+		String result = this.tools.addPetToOwner(1, "Rex", "dog", "not-a-date");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("Invalid date");
+	}
+
+	// --- bookVisit ---
+
+	@Test
+	void bookVisitShouldCreateVisitAndSave() {
+		Owner owner = createOwner(1, "George", "Franklin", "Madison", "6085551023");
+		Pet max = createNewPet("Max", "dog", LocalDate.of(2020, 1, 1));
+		owner.addPet(max);
+		max.setId(1);
+		given(this.ownerRepository.findById(1)).willReturn(Optional.of(owner));
+		given(this.ownerRepository.save(any(Owner.class))).willReturn(owner);
+
+		String futureDate = LocalDate.now().plusDays(7).toString();
+		String result = this.tools.bookVisit(1, 1, futureDate, "annual checkup");
+
+		assertThat(result).contains("Visit booked");
+		assertThat(result).contains("Max");
+		assertThat(result).contains("annual checkup");
+		assertThat(result).contains("/owners/1");
+	}
+
+	@Test
+	void bookVisitShouldReturnErrorWhenOwnerNotFound() {
+		given(this.ownerRepository.findById(999)).willReturn(Optional.empty());
+
+		String result = this.tools.bookVisit(999, 1, "2025-06-15", "checkup");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("Owner not found");
+	}
+
+	@Test
+	void bookVisitShouldReturnErrorWhenPetNotFound() {
+		Owner owner = createOwner(1, "George", "Franklin", "Madison", "6085551023");
+		given(this.ownerRepository.findById(1)).willReturn(Optional.of(owner));
+
+		String result = this.tools.bookVisit(1, 999, "2025-06-15", "checkup");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("Pet not found");
+	}
+
+	@Test
+	void bookVisitShouldReturnErrorForPastDate() {
+		Owner owner = createOwner(1, "George", "Franklin", "Madison", "6085551023");
+		Pet max = createNewPet("Max", "dog", LocalDate.of(2020, 1, 1));
+		owner.addPet(max);
+		max.setId(1);
+		given(this.ownerRepository.findById(1)).willReturn(Optional.of(owner));
+
+		String result = this.tools.bookVisit(1, 1, "2020-01-01", "checkup");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("in the past");
+	}
+
+	@Test
+	void bookVisitShouldReturnErrorForInvalidDate() {
+		Owner owner = createOwner(1, "George", "Franklin", "Madison", "6085551023");
+		Pet max = createNewPet("Max", "dog", LocalDate.of(2020, 1, 1));
+		owner.addPet(max);
+		max.setId(1);
+		given(this.ownerRepository.findById(1)).willReturn(Optional.of(owner));
+
+		String result = this.tools.bookVisit(1, 1, "bad-date", "checkup");
+
+		assertThat(result).contains("Error");
+		assertThat(result).contains("Invalid date");
+	}
+
 	// --- Helper methods ---
 
 	private Owner createOwner(int id, String firstName, String lastName, String city, String telephone) {
