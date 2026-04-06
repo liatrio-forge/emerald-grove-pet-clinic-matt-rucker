@@ -113,7 +113,7 @@ Implement the 3 write `@Tool` methods (`createOwner`, `addPetToOwner`, `bookVisi
 - [x] 3.10 Run `./mvnw test` and verify the full test suite passes (including all existing tests)
 - [x] 3.11 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
 
-### [ ] 4.0 Chat Widget, Controller, and E2E Test
+### [~] 4.0 Chat Widget, Controller, and E2E Test
 
 Build the `AssistantController` REST endpoints, the persistent floating chat widget embedded in the site layout, and a Playwright E2E test verifying cross-page persistence.
 
@@ -126,17 +126,17 @@ Build the `AssistantController` REST endpoints, the persistent floating chat wid
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Write a failing `AssistantControllerTests` test: `POST /api/assistant/chat` with JSON `{"message": "hello"}` returns 200 with JSON containing a `response` field. Use `@WebMvcTest(AssistantController.class)` with `@MockitoBean` for `ChatClient`.
-- [ ] 4.2 Write a failing `AssistantControllerTests` test: `GET /api/assistant/history` returns 200 with a JSON array
-- [ ] 4.3 Write a failing `AssistantControllerTests` test: `POST /api/assistant/chat` returns a friendly error JSON (not a stack trace) when `ChatClient` throws an exception
-- [ ] 4.4 Create `AssistantController.java` as a `@RestController`: implement `POST /api/assistant/chat` accepting JSON body, calling `ChatClient`, returning JSON response; implement `GET /api/assistant/history` returning the current session's conversation as a JSON array of `{role, content}` objects. Maintain conversation history in a `ConcurrentHashMap<String, List<Message>>` keyed by `HttpSession.getId()`, capped at 20 messages. Wrap `ChatClient` call in try-catch returning friendly error on failure.
-- [ ] 4.5 Make the controller tests pass, run `./mvnw test -Dtest=AssistantControllerTests`
-- [ ] 4.6 Create `AssistantAvailabilityAdvice.java` as a `@ControllerAdvice` that exposes an `assistantEnabled` boolean model attribute (`true` when `spring.ai.anthropic.api-key` property is non-empty, using `@Value`)
-- [ ] 4.7 Use `frontend-design` skill to build the chat widget fragment: Create `src/main/resources/templates/fragments/chat-widget.html` containing the FAB button (`fa-comments` icon, bottom-right, `#24AE1D` background), the chat panel (~350px wide, ~450px tall, fixed bottom-right), header bar with title + close button, scrollable message area, text input + send button, and inline JavaScript handling: toggle open/close, persist open/closed state in `sessionStorage`, fetch `/api/assistant/history` on page load to restore messages, POST to `/api/assistant/chat` on send, render responses with loading indicator, parse links in responses as clickable HTML
-- [ ] 4.8 Add chat widget styles to `src/main/resources/static/resources/css/petclinic.css`: FAB button, chat panel, header bar, message bubbles (user right-aligned green-tinted, assistant left-aligned dark), input row, loading indicator, open/close transitions. Follow STYLE_GUIDE.md colors (`#111111`, `#1E2327`, `#333333`, `#f8f9fa`, `#89df00`, `#24AE1D`)
-- [ ] 4.9 Include the chat widget fragment in `src/main/resources/templates/fragments/layout.html`: add `th:replace` for the chat widget fragment wrapped in `th:if="${assistantEnabled}"`, placed before the closing `</body>` tag
+- [x] 4.1 Write a failing `AssistantControllerTests` test: `POST /api/assistant/chat` with JSON `{"message": "hello"}` returns 200 with JSON containing a `response` field. Use `@WebMvcTest(AssistantController.class)` with `@MockitoBean` for `ChatClient`.
+- [x] 4.2 Write a failing `AssistantControllerTests` test: `GET /api/assistant/history` returns 200 with a JSON array
+- [x] 4.3 Write a failing `AssistantControllerTests` test: `POST /api/assistant/chat` returns a friendly error JSON (not a stack trace) when `ChatClient` throws an exception
+- [x] 4.4 Create `AssistantController.java` as a `@RestController`: implement `POST /api/assistant/chat` accepting JSON body, calling `ChatClient`, returning JSON response; implement `GET /api/assistant/history` returning the current session's conversation as a JSON array of `{role, content}` objects. Maintain conversation history in a `ConcurrentHashMap<String, List<Message>>` keyed by `HttpSession.getId()`, capped at 20 messages. Wrap `ChatClient` call in try-catch returning friendly error on failure.
+- [x] 4.5 Make the controller tests pass, run `./mvnw test -Dtest=AssistantControllerTests`
+- [x] 4.6 Create `AssistantAvailabilityAdvice.java` as a `@ControllerAdvice` that exposes an `assistantEnabled` boolean model attribute (`true` when `spring.ai.anthropic.api-key` property is non-empty, using `@Value`)
+- [x] 4.7 Use `frontend-design` skill to build the chat widget fragment: Create `src/main/resources/templates/fragments/chat-widget.html` containing the FAB button (`fa-comments` icon, bottom-right, `#24AE1D` background), the chat panel (~350px wide, ~450px tall, fixed bottom-right), header bar with title + close button, scrollable message area, text input + send button, and inline JavaScript handling: toggle open/close, persist open/closed state in `sessionStorage`, fetch `/api/assistant/history` on page load to restore messages, POST to `/api/assistant/chat` on send, render responses with loading indicator, parse links in responses as clickable HTML
+- [x] 4.8 Add chat widget styles to `src/main/resources/static/resources/css/petclinic.css`: FAB button, chat panel, header bar, message bubbles (user right-aligned green-tinted, assistant left-aligned dark), input row, loading indicator, open/close transitions. Follow STYLE_GUIDE.md colors (`#111111`, `#1E2327`, `#333333`, `#f8f9fa`, `#89df00`, `#24AE1D`)
+- [x] 4.9 Include the chat widget fragment in `src/main/resources/templates/fragments/layout.html`: add `th:replace` for the chat widget fragment wrapped in `th:if="${assistantEnabled}"`, placed before the closing `</body>` tag
 - [ ] 4.10 Run `web-design-guidelines` skill to audit the chat widget for accessibility compliance (WCAG AA contrast, focus-visible states, semantic HTML, aria labels on FAB and close button)
-- [ ] 4.11 Create `e2e-tests/tests/features/ai-assistant.spec.ts`: Playwright test that (1) clicks the FAB to open the widget on any page, (2) types a message and sends it, (3) verifies a response appears in the widget, (4) navigates to a different page, (5) verifies the widget is still open and conversation messages are preserved. Use `@fixtures/base-test` pattern. Skip if `ANTHROPIC_API_KEY` env var is not set.
-- [ ] 4.12 Run `./mvnw test` to verify full Java test suite passes
+- [x] 4.11 Create `e2e-tests/tests/features/ai-assistant.spec.ts`: Playwright test that (1) clicks the FAB to open the widget on any page, (2) types a message and sends it, (3) verifies a response appears in the widget, (4) navigates to a different page, (5) verifies the widget is still open and conversation messages are preserved. Use `@fixtures/base-test` pattern. Skip if `ANTHROPIC_API_KEY` env var is not set.
+- [x] 4.12 Run `./mvnw test` to verify full Java test suite passes
 - [ ] 4.13 Run the Playwright E2E test with `ANTHROPIC_API_KEY` set and verify it passes
-- [ ] 4.14 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance
+- [x] 4.14 Run `./mvnw spring-javaformat:apply` to ensure formatting compliance

@@ -101,6 +101,9 @@
 
   <script th:src="@{/webjars/bootstrap/dist/js/bootstrap.bundle.min.js}"></script>
 
+  <!-- AI Assistant Chat Widget -->
+  <div th:if="${assistantEnabled}" th:replace="~{fragments/chat-widget :: chatWidget}"></div>
+
 </body>
 
 </html>
