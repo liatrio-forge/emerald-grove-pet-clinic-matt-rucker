@@ -94,12 +94,18 @@
         });
       };
 
+      function escapeHtml(text) {
+        var el = document.createElement('span');
+        el.textContent = text;
+        return el.innerHTML;
+      }
+
       function appendMessage(role, content) {
         var container = document.getElementById('chat-messages');
         var div = document.createElement('div');
         div.className = 'chat-message chat-message-' + role;
         var p = document.createElement('p');
-        p.innerHTML = linkify(content);
+        p.innerHTML = linkify(escapeHtml(content));
         div.appendChild(p);
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;

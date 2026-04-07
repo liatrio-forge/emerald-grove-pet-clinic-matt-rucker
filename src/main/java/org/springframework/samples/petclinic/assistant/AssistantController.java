@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
@@ -42,6 +45,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/api/assistant")
 @ConditionalOnProperty(name = "spring.ai.anthropic.api-key", matchIfMissing = false)
 public class AssistantController {
+
+	private static final Logger logger = LoggerFactory.getLogger(AssistantController.class);
 
 	private static final int MAX_HISTORY_SIZE = 20;
 
@@ -70,6 +75,7 @@ public class AssistantController {
 			return Map.of("response", response);
 		}
 		catch (Exception ex) {
+			logger.error("Assistant chat error", ex);
 			history.remove(history.size() - 1);
 			return Map.of("response",
 					"I'm sorry, I'm having trouble processing your request right now. Please try again.");

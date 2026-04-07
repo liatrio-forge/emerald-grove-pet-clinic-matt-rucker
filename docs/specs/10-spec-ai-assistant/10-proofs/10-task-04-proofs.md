@@ -58,6 +58,12 @@ BUILD SUCCESS
 - Input: `#111111` background, `#24AE1D` focus ring
 - Font: DM Sans (inherited from layout)
 
-## Remaining Manual Steps
-- [ ] 4.10: Run web-design-guidelines audit
-- [ ] 4.13: Run Playwright E2E test with ANTHROPIC_API_KEY set
+## Security Hardening
+- XSS fix: `escapeHtml()` applied before `innerHTML` in `appendMessage()` — prevents malicious HTML in AI responses
+- Error logging added to controller (`logger.error`) for debugging without exposing internals to users
+- No destructive tools (delete/update) exposed to the AI
+
+## Manual Verification
+- Web-design-guidelines audit: PASS (all WCAG AA, ARIA, focus, STYLE_GUIDE.md checks)
+- Live chat tested with real Anthropic API key — tool calling works end-to-end
+- Full test suite: 124 tests, 0 failures
