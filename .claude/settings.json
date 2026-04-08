@@ -1,22 +1,12 @@
 {
   "hooks": {
-    "postToolUse": [
+    "PostToolUse": [
       {
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
             "command": "echo '[Hook: post-edit] Remember to run tests after implementation changes. Run ./mvnw test to validate.'"
-          }
-        ]
-      }
-    ],
-    "preCommit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook: pre-commit] Verify: (1) all tests pass (./mvnw test), (2) commit message follows conventional commits format, (3) branch is not main.'"
           }
         ]
       }
