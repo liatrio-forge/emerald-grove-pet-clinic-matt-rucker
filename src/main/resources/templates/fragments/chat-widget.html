@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+
+<div th:fragment="chatWidget">
+  <!-- Floating Action Button -->
+  <button id="chat-fab" class="chat-fab" aria-label="Open AI Assistant" onclick="toggleChatWidget()">
+    <span class="fa fa-comments" aria-hidden="true"></span>
+  </button>
+
+  <!-- Chat Panel -->
+  <div id="chat-panel" class="chat-panel" role="dialog" aria-label="AI Assistant chat" style="display: none;">
+    <div class="chat-header">
+      <span class="chat-header-title" th:text="#{assistant.title}">AI Assistant</span>
+      <button class="chat-close" aria-label="Close chat" onclick="toggleChatWidget()">
+        <span class="fa fa-times" aria-hidden="true"></span>
+      </button>
+    </div>
+    <div id="chat-messages" class="chat-messages" role="log" aria-live="polite">
+      <div class="chat-message chat-message-assistant">
+        <p th:text="#{assistant.welcome}">Hello! I'm the Emerald Grove clinic assistant. How can I help you today?</p>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..."
+             aria-label="Chat message" autocomplete="off"
+             onkeydown="if(event.key==='Enter'){sendChatMessage();}" />
+      <button id="chat-send" class="chat-send btn btn-primary" aria-label="Send message" onclick="sendChatMessage()">
+        <span class="fa fa-paper-plane" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <script th:inline="none">
+    (function() {
+      var STORAGE_KEY = 'chatWidgetOpen';
+
+      // Restore widget state on page load
+      if (sessionStorage.getItem(STORAGE_KEY) === 'true') {
+        document.getElementById('chat-panel').style.display = 'flex';
+        document.getElementById('chat-fab').classList.add('chat-fab-hidden');
+      }
+
+      // Restore conversation history from server
+      fetch('/api/assistant/history')
+        .then(function(res) { return res.json(); })
+        .then(function(messages) {
+          if (messages.length > 0) {
+            var container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            messages.forEach(function(msg) {
+              appendMessage(msg.role, msg.content);
+            });
+            container.scrollTop = container.scrollHeight;
+          }
+        })
+        .catch(function() { /* ignore - widget just shows welcome message */ });
+
+      // Expose functions globally
+      window.toggleChatWidget = function() {
+        var panel = document.getElementById('chat-panel');
+        var fab = document.getElementById('chat-fab');
+        var isOpen = panel.style.display === 'flex';
+        panel.style.display = isOpen ? 'none' : 'flex';
+        fab.classList.toggle('chat-fab-hidden', !isOpen);
+        sessionStorage.setItem(STORAGE_KEY, !isOpen ? 'true' : 'false');
+        if (!isOpen) {
+          document.getElementById('chat-input').focus();
+        }
+      };
+
+      window.sendChatMessage = function() {
+        var input = document.getElementById('chat-input');
+        var message = input.value.trim();
+        if (!message) return;
+
+        input.value = '';
+        appendMessage('user', message);
+        showLoading();
+
+        fetch('/api/assistant/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: message })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          hideLoading();
+          appendMessage('assistant', data.response);
+        })
+        .catch(function() {
+          hideLoading();
+          appendMessage('assistant', 'Sorry, something went wrong. Please try again.');
+        });
+      };
+
+      function escapeHtml(text) {
+        var el = document.createElement('span');
+        el.textContent = text;
+        return el.innerHTML;
+      }
+
+      function appendMessage(role, content) {
+        var container = document.getElementById('chat-messages');
+        var div = document.createElement('div');
+        div.className = 'chat-message chat-message-' + role;
+        var p = document.createElement('p');
+        p.innerHTML = linkify(escapeHtml(content));
+        div.appendChild(p);
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function showLoading() {
+        var container = document.getElementById('chat-messages');
+        var div = document.createElement('div');
+        div.id = 'chat-loading';
+        div.className = 'chat-message chat-message-assistant chat-loading';
+        div.innerHTML = '<p><span class="chat-dot"></span><span class="chat-dot"></span><span class="chat-dot"></span></p>';
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function hideLoading() {
+        var el = document.getElementById('chat-loading');
+        if (el) el.remove();
+      }
+
+      function linkify(text) { // #{i18n.excluded}
+        if (!text) return '';
+        text = text.replace(/(\/owners\/\d+)/g, // #{i18n.excluded}
+          '<a href="$1" class="chat-link">$1</a>'); // #{i18n.excluded}
+        text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, // #{i18n.excluded}
+          '<a href="$2" class="chat-link">$1</a>'); // #{i18n.excluded}
+        text = text.replace(/\n/g, '<br>');
+        return text;
+      }
+
+      window.appendMessage = appendMessage;
+    })();
+  </script>
+</div>
+
+</body>
+</html>
