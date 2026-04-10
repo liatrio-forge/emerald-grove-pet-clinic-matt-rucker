@@ -89,3 +89,25 @@ Any change with visual impact must follow frontend UI/UX best practices and adhe
 - Use the `frontend-design` skill when building new UI components
 - Visual changes without a style guide reference or design review are not considered complete
 - "It compiles and the tests pass" is not sufficient for frontend work — visual correctness must be verified
+
+## Article 11: Mise + Dagger CI/CD
+
+All CI/CD pipeline logic must live in Dagger pipelines, invoked through Mise tasks. External CI systems (GitHub Actions, etc.) serve only as triggers.
+
+- **Mise** is the developer-facing entry point for all project commands (`mise run ci`, `mise run dev`, `mise run deploy:staging`)
+- **Mise** manages tool versions (Java, Node, Maven, Dagger) and environment variables via `.mise.toml` — no system-level dependencies required beyond Mise itself
+- **Dagger** implements containerized pipeline steps (build, test, scan, image build, deploy) as functions
+- **Podman** is the container runtime — no Docker dependency. Rootless by default.
+- CI system workflows must be thin wrappers: checkout → install Mise → `mise run ci`
+- No build logic, test orchestration, or deployment steps in CI system YAML/config
+- Pipelines must produce identical results locally and in CI
+- This ensures CI/CD is portable, testable, and not locked to any single CI platform or container runtime
+
+## Article 12: Infrastructure as Code
+
+All cloud infrastructure must be defined in code using OpenTofu. No manual resource creation via console or CLI.
+
+- Infrastructure changes follow the same review process as application code (PR-based)
+- State must be stored remotely with locking (S3 + DynamoDB)
+- Environments are parameterized via variable files, not duplicated modules
+- Secrets and credentials must never appear in IaC files — use AWS Secrets Manager or SSM Parameter Store
