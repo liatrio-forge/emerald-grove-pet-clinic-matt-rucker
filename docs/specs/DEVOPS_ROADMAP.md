@@ -32,7 +32,7 @@
 
 ### Spec 11: Production Containerization
 
-- **Status:** Not started
+- **Status:** Complete (PR #27 merged)
 - **Directory:** `docs/specs/11-spec-production-containerization/`
 - **Scope:** Multi-stage Containerfile (Podman-compatible), optimized Spring Boot image, GHCR/ECR-ready
 - **Depends on:** Nothing
@@ -99,6 +99,11 @@ Spec 11 (Containerization)
         └── Spec 15 (Monitoring) ← also needs Spec 14
               └── Capstone (AI Platform Tool)
 ```
+
+## Deferred Work (Do Not Lose)
+
+- **E2E tests (Playwright) in Dagger**: Removed from GHA in Spec 12 (old workflow deleted). Must be re-added as a Dagger function in a future spec. Playwright requires a browser, so this needs dedicated work.
+- **Performance tests (JMeter) in Dagger**: Removed from GHA in Spec 12 (old workflow deleted). Must be re-added as a Dagger function in a future spec.
 
 ## Execution Sequence
 

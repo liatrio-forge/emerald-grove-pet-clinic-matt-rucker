@@ -6,7 +6,7 @@ dagger = "latest"
 
 [tasks.ci]
 description = "Run full CI pipeline (build, test, coverage, image build)"
-run = "dagger call ci --source=."
+run = "dagger -m dagger call run --source=."
 
 [tasks.test]
 description = "Run unit and integration tests"

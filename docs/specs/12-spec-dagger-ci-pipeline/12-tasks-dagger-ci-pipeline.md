@@ -59,7 +59,7 @@ Create `.mise.toml` with tool versions (Java 17, Node 20, Maven, Dagger) and the
 - [x] 1.5 Update README.md: add a "Development Commands" section after the "Quick Start" section documenting all Mise tasks with descriptions and usage examples. Include `mise install` as the first step in Quick Start.
 - [x] 1.6 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-01-proofs.md`
 
-### [ ] 2.0 Dagger CI Pipeline (Build, Test, Coverage Gate)
+### [~] 2.0 Dagger CI Pipeline (Build, Test, Coverage Gate)
 
 Initialize a Dagger module in `dagger/` with the Go SDK. Implement `Build`, `Test`, `CoverageCheck`, and `Ci` functions. The `Ci` function orchestrates build → test → coverage gate (80% branch coverage). Each function is independently callable.
 
@@ -73,17 +73,17 @@ Initialize a Dagger module in `dagger/` with the Go SDK. Implement `Build`, `Tes
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Ensure Dagger is installed (via `mise install` from Task 1.0). Verify Dagger can connect to Podman: run `dagger version` and `dagger call --help`. If Dagger can't find a container runtime, set `DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock` in `.mise.toml` env section and ensure `podman system service` is running.
-- [ ] 2.2 Initialize the Dagger module: `cd dagger && dagger init --sdk=go --name=ci --source=.` (or from project root: `dagger init --sdk=go --name=ci --source=dagger`). This creates `dagger/main.go`, `dagger/dagger.json`, `dagger/go.mod`, and `dagger/internal/`.
-- [ ] 2.3 Implement the `Build` function in `dagger/main.go`: takes a `*dagger.Directory` (source), runs Maven package in a `maven:3.9-amazoncorretto-17` container, returns the built container with the JAR. Use Maven dependency caching (copy pom.xml first, run `dependency:go-offline`, then copy src/).
-- [ ] 2.4 Implement the `Test` function in `dagger/main.go`: takes a `*dagger.Directory` (source), runs `./mvnw test` in a Maven container, returns the container with test results and JaCoCo reports in `target/site/jacoco/`.
-- [ ] 2.5 Add JaCoCo `check` goal to `pom.xml` with 80% branch coverage minimum. Add an execution block under the existing `jacoco-maven-plugin` configuration:
+- [x] 2.1 Ensure Dagger is installed (via `mise install` from Task 1.0). Verify Dagger can connect to Podman: run `dagger version` and `dagger call --help`. If Dagger can't find a container runtime, set `DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock` in `.mise.toml` env section and ensure `podman system service` is running.
+- [x] 2.2 Initialize the Dagger module: `cd dagger && dagger init --sdk=go --name=ci --source=.` (or from project root: `dagger init --sdk=go --name=ci --source=dagger`). This creates `dagger/main.go`, `dagger/dagger.json`, `dagger/go.mod`, and `dagger/internal/`.
+- [x] 2.3 Implement the `Build` function in `dagger/main.go`: takes a `*dagger.Directory` (source), runs Maven package in a `maven:3.9-amazoncorretto-17` container, returns the built container with the JAR. Use Maven dependency caching (copy pom.xml first, run `dependency:go-offline`, then copy src/).
+- [x] 2.4 Implement the `Test` function in `dagger/main.go`: takes a `*dagger.Directory` (source), runs `./mvnw test` in a Maven container, returns the container with test results and JaCoCo reports in `target/site/jacoco/`.
+- [x] 2.5 Add JaCoCo `check` goal to `pom.xml` with 80% branch coverage minimum. Add an execution block under the existing `jacoco-maven-plugin` configuration:
   - Goal: `check`
   - Rule: `BUNDLE` element, counter `BRANCH`, value `COVEREDRATIO`, minimum `0.80`
   - This makes `./mvnw test` fail if branch coverage is below 80%
   - If the existing codebase is below 80%, adjust the threshold to the current level and document the decision
-- [ ] 2.6 Implement the `CoverageCheck` function in `dagger/main.go`: runs after Test, verifies the JaCoCo check goal passed, and outputs the branch coverage percentage from the JaCoCo XML report.
-- [ ] 2.7 Implement the `Ci` function in `dagger/main.go`: orchestrates Build → Test (with coverage) → CoverageCheck. Returns success/failure with summary output.
+- [x] 2.6 Implement the `CoverageCheck` function in `dagger/main.go`: runs after Test, verifies the JaCoCo check goal passed, and outputs the branch coverage percentage from the JaCoCo XML report.
+- [x] 2.7 Implement the `Ci` function in `dagger/main.go`: orchestrates Build → Test (with coverage) → CoverageCheck. Returns success/failure with summary output.
 - [ ] 2.8 Verify the pipeline: run `dagger call ci --source=.` from the project root. Confirm it builds, tests, and reports coverage. Then run `mise run ci` and confirm identical behavior.
 - [ ] 2.9 Verify failure detection: temporarily break a test, run `mise run ci`, confirm it fails. Revert the broken test.
 - [ ] 2.10 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-02-proofs.md`
