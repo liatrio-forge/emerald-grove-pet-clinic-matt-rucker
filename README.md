@@ -16,21 +16,24 @@ The Emerald Grove Veterinary Clinic application manages the core operations of a
 
 ### Prerequisites
 
-- **Java 17** or later
-- **Maven 3.6+** or **Gradle 7+**
+- **[Mise](https://mise.jdx.dev/)** — tool version manager (installs Java, Node, Maven, Dagger automatically)
+- **[Podman](https://podman.io/)** — container runtime (used for CI pipeline and local dev)
 
-### Run Application
+### Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/liatrio-labs/spring-petclinic-enhanced
-cd spring-petclinic-enhanced
+git clone https://github.com/liatrio-forge/emerald-grove-pet-clinic-matt-rucker.git
+cd emerald-grove-pet-clinic-matt-rucker
 
-# Run with Maven
-./mvnw spring-boot:run
+# Install all required tools (Java 17, Node 20, Maven, Dagger)
+mise install
 
-# Or run with Gradle
-./gradlew bootRun
+# Trust the project config (first time only)
+mise trust
+
+# Run the application
+mise run dev
 ```
 
 Access the application at `http://localhost:8080`
@@ -38,8 +41,25 @@ Access the application at `http://localhost:8080`
 ### Database Options
 
 - **Default**: H2 in-memory database (auto-populated with sample data)
-- **MySQL**: Run with `-Dspring-boot.run.profiles=mysql`
-- **PostgreSQL**: Run with `-Dspring-boot.run.profiles=postgres`
+- **`mise run dev`**: PostgreSQL via Podman Compose (recommended for development)
+- **MySQL**: `./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql`
+
+## Development Commands
+
+All commands are defined in `.mise.toml` and run via `mise run <task>`.
+
+| Command | Description |
+|---|---|
+| `mise run ci` | Run the full CI pipeline (build, test, coverage, image build) |
+| `mise run test` | Run unit and integration tests |
+| `mise run build` | Compile and package the application (skip tests) |
+| `mise run format` | Apply Spring Java code formatting |
+| `mise run lint` | Check formatting and code style (Checkstyle) |
+| `mise run dev` | Start local dev environment (PostgreSQL + Spring Boot) |
+| `mise run dev:down` | Stop local dev environment |
+
+The CI pipeline uses [Dagger](https://dagger.io/) for containerized, reproducible builds.
+Running `mise run ci` locally produces identical results to the GitHub Actions CI workflow.
 
 ## Documentation
 

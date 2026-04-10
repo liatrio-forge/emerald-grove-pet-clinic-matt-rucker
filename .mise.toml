@@ -1,0 +1,33 @@
+[tools]
+java = "corretto-17"
+node = "20"
+maven = "3.9"
+dagger = "latest"
+
+[tasks.ci]
+description = "Run full CI pipeline (build, test, coverage, image build)"
+run = "dagger call ci --source=."
+
+[tasks.test]
+description = "Run unit and integration tests"
+run = "./mvnw test"
+
+[tasks.build]
+description = "Compile and package (skip tests)"
+run = "./mvnw package -DskipTests"
+
+[tasks.format]
+description = "Apply Spring Java formatting"
+run = "./mvnw spring-javaformat:apply"
+
+[tasks.lint]
+description = "Check formatting and code style"
+run = "./mvnw spring-javaformat:validate checkstyle:check"
+
+[tasks.dev]
+description = "Start local dev environment (PostgreSQL + Spring Boot)"
+run = "podman compose up -d postgres && ./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres"
+
+[tasks."dev:down"]
+description = "Stop local dev environment"
+run = "podman compose down"
