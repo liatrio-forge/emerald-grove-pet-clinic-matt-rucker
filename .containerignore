@@ -1,0 +1,45 @@
+# Version control
+.git/
+
+# Build output
+target/
+build/
+node_modules/
+
+# IDE files
+.idea/
+*.iws
+*.iml
+*.ipr
+.settings/
+.classpath
+.project
+.factorypath
+.springBeans
+.sts4-cache
+bin/
+
+# Documentation (not needed in image)
+*.md
+docs/
+
+# Test suites
+e2e-tests/
+test-results/
+
+# Dev environment
+.devcontainer/
+.gitpod.yml
+Tiltfile
+docker-compose.yml
+.local/
+.env
+
+# CI/CD and tooling
+.github/
+k8s/
+.claude/
+.gradle/
+
+# Logs
+*.log
