@@ -35,7 +35,7 @@ Create a `.containerignore` file to exclude unnecessary files from the Podman bu
 - [x] 1.2 Create `.dockerignore` as a symlink to `.containerignore` (`ln -s .containerignore .dockerignore`) for compatibility with tools that expect `.dockerignore`
 - [x] 1.3 Create a temporary minimal `Containerfile` (just `FROM alpine` + `RUN ls /`) to verify the build context is small, then delete it. Save the build context size output to `docs/specs/11-spec-production-containerization/11-proofs/11-task-01-proofs.md`
 
-### [ ] 2.0 Create Multi-Stage Production Containerfile
+### [x] 2.0 Create Multi-Stage Production Containerfile
 
 Create the core `Containerfile` with a multi-stage build: Amazon Corretto 17 JDK for building, Chainguard `amazon-corretto-jre:latest` distroless for runtime. Uses Spring Boot layered JAR extraction for optimal layer caching. Includes all security hardening (non-root user, no HEALTHCHECK, JAVA_TOOL_OPTIONS for JVM defaults, postgres profile default).
 
@@ -48,7 +48,7 @@ Create the core `Containerfile` with a multi-stage build: Amazon Corretto 17 JDK
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Create `Containerfile` in the project root with the build stage:
+- [x] 2.1 Create `Containerfile` in the project root with the build stage:
   - `FROM amazoncorretto:17 AS build`
   - Set `WORKDIR /workspace`
   - Copy Maven wrapper and pom.xml first (`COPY .mvn/ .mvn/`, `COPY mvnw pom.xml ./`)
@@ -56,7 +56,7 @@ Create the core `Containerfile` with a multi-stage build: Amazon Corretto 17 JDK
   - Copy source code (`COPY src/ src/`)
   - Run `./mvnw package -DskipTests -B` to build the fat JAR
   - Extract layered JAR: `java -Djarmode=tools -jar target/*.jar extract --layers --destination /workspace/extracted`
-- [ ] 2.2 Add the runtime stage to the Containerfile:
+- [x] 2.2 Add the runtime stage to the Containerfile:
   - `FROM cgr.dev/chainguard/amazon-corretto-jre:latest AS runtime`
   - Set `WORKDIR /app`
   - Copy layers from build stage in dependency order:
@@ -64,19 +64,19 @@ Create the core `Containerfile` with a multi-stage build: Amazon Corretto 17 JDK
     - `COPY --from=build /workspace/extracted/spring-boot-loader/ ./`
     - `COPY --from=build /workspace/extracted/snapshot-dependencies/ ./`
     - `COPY --from=build /workspace/extracted/application/ ./`
-- [ ] 2.3 Add runtime configuration to the Containerfile:
+- [x] 2.3 Add runtime configuration to the Containerfile:
   - `ENV SPRING_PROFILES_ACTIVE=postgres`
   - `ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -XX:+UseContainerSupport"`
   - `EXPOSE 8080`
   - `ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]`
-- [ ] 2.4 Verify the Chainguard image provides a non-root user by default. If it does, no additional `USER` instruction is needed. If not, add user creation in the build stage and copy `/etc/passwd` to the runtime stage. Document the finding.
-- [ ] 2.5 Build the image with `podman build -t emerald-grove-pet-clinic:test .` and verify:
+- [x] 2.4 Verify the Chainguard image provides a non-root user by default. If it does, no additional `USER` instruction is needed. If not, add user creation in the build stage and copy `/etc/passwd` to the runtime stage. Document the finding.
+- [x] 2.5 Build the image with `podman build -t emerald-grove-pet-clinic:test .` and verify:
   - Build completes without errors
   - Image size is under 300MB (`podman images emerald-grove-pet-clinic:test --format '{{.Size}}'`)
   - User is non-root (`podman inspect emerald-grove-pet-clinic:test --format '{{.Config.User}}'`)
   - Environment variables are set correctly (`podman inspect emerald-grove-pet-clinic:test --format '{{.Config.Env}}'`)
   - Save all output to `docs/specs/11-spec-production-containerization/11-proofs/11-task-02-proofs.md`
-- [ ] 2.6 If the Chainguard distroless image causes build or runtime failures (e.g., musl libc incompatibility with Spring AI), switch the runtime stage to `amazoncorretto:17-alpine` and add a non-root user manually (`adduser -D -u 1001 appuser && USER appuser`). Document the fallback decision in the proofs file.
+- [x] 2.6 If the Chainguard distroless image causes build or runtime failures (e.g., musl libc incompatibility with Spring AI), switch the runtime stage to `amazoncorretto:17-alpine` and add a non-root user manually (`adduser -D -u 1001 appuser && USER appuser`). Document the fallback decision in the proofs file.
 
 ### [ ] 3.0 Verify Container Runs Against PostgreSQL
 
