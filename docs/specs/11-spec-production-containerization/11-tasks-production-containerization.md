@@ -78,7 +78,7 @@ Create the core `Containerfile` with a multi-stage build: Amazon Corretto 17 JDK
   - Save all output to `docs/specs/11-spec-production-containerization/11-proofs/11-task-02-proofs.md`
 - [x] 2.6 If the Chainguard distroless image causes build or runtime failures (e.g., musl libc incompatibility with Spring AI), switch the runtime stage to `amazoncorretto:17-alpine` and add a non-root user manually (`adduser -D -u 1001 appuser && USER appuser`). Document the fallback decision in the proofs file.
 
-### [ ] 3.0 Verify Container Runs Against PostgreSQL
+### [x] 3.0 Verify Container Runs Against PostgreSQL
 
 Start a PostgreSQL instance via Podman, run the production container pointing at it, and verify the application starts, responds to requests, and the actuator health endpoint works. Also verify distroless properties (no shell access).
 
@@ -91,19 +91,19 @@ Start a PostgreSQL instance via Podman, run the production container pointing at
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Create a Podman pod (or use `--network` flag) so the app container can reach PostgreSQL. Start a PostgreSQL container:
+- [x] 3.1 Create a Podman pod (or use `--network` flag) so the app container can reach PostgreSQL. Start a PostgreSQL container:
   - `podman run -d --name test-postgres -e POSTGRES_USER=petclinic -e POSTGRES_PASSWORD=petclinic -e POSTGRES_DB=petclinic -p 5432:5432 postgres:18.1`
   - Wait for postgres to be ready: `podman exec test-postgres pg_isready -U petclinic`
-- [ ] 3.2 Run the production container connected to the test PostgreSQL:
+- [x] 3.2 Run the production container connected to the test PostgreSQL:
   - `podman run -d --name test-app -p 8080:8080 -e POSTGRES_URL=jdbc:postgresql://host.containers.internal:5432/petclinic -e POSTGRES_USER=petclinic -e POSTGRES_PASS=petclinic -e ANTHROPIC_API_KEY= emerald-grove-pet-clinic:test`
   - Note: `ANTHROPIC_API_KEY` is set to empty string intentionally — the AI assistant feature degrades gracefully without it
-- [ ] 3.3 Verify the application is healthy and serving pages:
+- [x] 3.3 Verify the application is healthy and serving pages:
   - Wait up to 40 seconds for startup, then: `curl http://localhost:8080/actuator/health` — expect `{"status":"UP"}`
   - `curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/` — expect `200`
   - `curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/owners?lastName=` — expect `200`
-- [ ] 3.4 Verify distroless properties:
+- [x] 3.4 Verify distroless properties:
   - `podman run --rm emerald-grove-pet-clinic:test sh` — expect failure (no shell)
   - `podman run --rm emerald-grove-pet-clinic:test whoami` — expect failure (no utilities)
-- [ ] 3.5 Verify layer caching: make a trivial change to a Java source file, rebuild with `podman build -t emerald-grove-pet-clinic:test .`, and confirm the dependency layers are reused (look for `CACHED` or `Using cache` in build output). Confirm rebuild takes under 30 seconds for code-only changes.
-- [ ] 3.6 Save all verification output to `docs/specs/11-spec-production-containerization/11-proofs/11-task-03-proofs.md`
-- [ ] 3.7 Clean up test containers: `podman rm -f test-app test-postgres`
+- [x] 3.5 Verify layer caching: make a trivial change to a Java source file, rebuild with `podman build -t emerald-grove-pet-clinic:test .`, and confirm the dependency layers are reused (look for `CACHED` or `Using cache` in build output). Confirm rebuild takes under 30 seconds for code-only changes.
+- [x] 3.6 Save all verification output to `docs/specs/11-spec-production-containerization/11-proofs/11-task-03-proofs.md`
+- [x] 3.7 Clean up test containers: `podman rm -f test-app test-postgres`

@@ -12,19 +12,20 @@ RUN ./mvnw dependency:go-offline -B
 COPY src/ src/
 RUN ./mvnw package -DskipTests -B
 
-# Extract layered JAR
-RUN java -Djarmode=tools -jar target/*.jar extract --layers --destination /workspace/extracted
+# Extract application for optimized runtime layout
+# Spring Boot 4 extract produces: app.jar (thin) + lib/ (dependencies)
+RUN java -Djarmode=tools -jar target/*.jar extract --destination /workspace/extracted
 
 # Stage 2: Runtime (distroless)
 FROM cgr.dev/chainguard/jre:latest AS runtime
 
 WORKDIR /app
 
-# Copy layers in dependency order for optimal caching
-COPY --from=build /workspace/extracted/dependencies/ ./
-COPY --from=build /workspace/extracted/spring-boot-loader/ ./
-COPY --from=build /workspace/extracted/snapshot-dependencies/ ./
-COPY --from=build /workspace/extracted/application/ ./
+# Copy dependencies first (changes rarely — cached layer)
+COPY --from=build /workspace/extracted/lib/ ./lib/
+
+# Copy application JAR (changes frequently)
+COPY --from=build /workspace/extracted/*.jar ./application.jar
 
 # Runtime configuration
 ENV SPRING_PROFILES_ACTIVE=postgres
@@ -32,4 +33,4 @@ ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -XX:+UseContainerSupport"
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "-jar", "application.jar"]
