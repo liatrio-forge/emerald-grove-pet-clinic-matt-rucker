@@ -22,3 +22,13 @@ output "ecs_service_name" {
   description = "Name of the ECS service"
   value       = module.ecs.service_name
 }
+
+output "ci_role_arn" {
+  description = "ARN of the CI role for GitHub Actions OIDC"
+  value       = module.identity.ci_role_arn
+}
+
+output "tofu_role_arn" {
+  description = "ARN of the Tofu role for infrastructure management"
+  value       = module.identity.tofu_role_arn
+}

@@ -23,6 +23,15 @@ module "rds" {
   security_group_id = module.networking.rds_security_group_id
 }
 
+module "identity" {
+  source = "./modules/identity"
+
+  environment        = var.environment
+  project            = var.project
+  github_repo        = "liatrio-forge/emerald-grove-pet-clinic-matt-rucker"
+  ecr_repository_arn = module.ecr.repository_arn
+}
+
 module "ecs" {
   source = "./modules/ecs"
 
