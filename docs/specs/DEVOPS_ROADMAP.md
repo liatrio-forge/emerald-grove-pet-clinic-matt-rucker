@@ -53,9 +53,9 @@
 
 ### Spec 14: CD Pipeline (Deploy)
 
-- **Status:** Not started
+- **Status:** Complete (PR #33 merged)
 - **Directory:** `docs/specs/14-spec-cd-pipeline/`
-- **Scope:** Dagger deploy functions (push to ECR → update ECS Fargate service). Staging deploy on merge to main. Prod deploy on git tag. Manual approval gate for prod.
+- **Scope:** Dagger deploy functions, GHA CD workflow with OIDC, single prod environment, teardown automation. App verified live on ALB then torn down.
 - **Depends on:** Specs 12, 13
 
 ### Spec 15: Monitoring & Observability
