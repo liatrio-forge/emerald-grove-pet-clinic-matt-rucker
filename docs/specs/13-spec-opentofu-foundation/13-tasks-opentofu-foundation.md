@@ -105,7 +105,7 @@ Create `infra/modules/networking/` with VPC, public subnets, internet gateway, s
 - [ ] 2.10 Verify: run `tofu -chdir=infra init -backend=false` (skip backend since S3 doesn't exist) and `tofu -chdir=infra plan -var-file=environments/staging.tfvars`. Plan must succeed showing VPC, subnets, ALB, and security group resources.
 - [ ] 2.11 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-02-proofs.md`
 
-### [ ] 3.0 ECR Module (Container Registry)
+### [~] 3.0 ECR Module (Container Registry)
 
 Create `infra/modules/ecr/` with the ECR repository, image scanning, immutable tags, and lifecycle policy. Wire into the root module.
 
