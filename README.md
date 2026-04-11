@@ -58,8 +58,72 @@ All commands are defined in `.mise.toml` and run via `mise run <task>`.
 | `mise run dev` | Start local dev environment (PostgreSQL + Spring Boot) |
 | `mise run dev:down` | Stop local dev environment |
 
-The CI pipeline uses [Dagger](https://dagger.io/) for containerized, reproducible builds.
-Running `mise run ci` locally produces identical results to the GitHub Actions CI workflow.
+## CI/CD Pipeline
+
+This project uses [Dagger](https://dagger.io/) for containerized, reproducible CI/CD pipelines and [Mise](https://mise.jdx.dev/) as the developer-facing task runner. All pipeline logic lives in Go code (`dagger/main.go`), not in CI system YAML. GitHub Actions serves only as a thin trigger.
+
+### Running CI Locally
+
+```bash
+# Full pipeline: build → test → coverage gate (80% branch) → image build
+mise run ci
+
+# Or call Dagger directly (identical behavior)
+dagger -m dagger call run --source=.
+```
+
+The pipeline runs inside containers, so results are identical whether you run locally or in CI. No "works on my machine" issues.
+
+### Running Individual Steps
+
+```bash
+# Build only
+dagger -m dagger call build --source=.
+
+# Test only (with JaCoCo coverage)
+dagger -m dagger call test --source=.
+
+# Build container image only
+dagger -m dagger call build-image --source=.
+
+# Full pipeline with ECR push (requires AWS credentials)
+dagger -m dagger call run --source=. --registry=<account>.dkr.ecr.<region>.amazonaws.com/<repo>
+```
+
+### How CI Works in GitHub Actions
+
+On every push to `main` and on pull requests, the `.github/workflows/ci.yml` workflow runs:
+
+1. Checks out the code
+2. Installs Mise and all project tools (Java 17, Maven, Dagger)
+3. Runs `mise run ci` — the same command you run locally
+4. Uploads the JaCoCo coverage report as a workflow artifact
+
+The workflow YAML contains zero build logic — it's 19 lines total. All intelligence lives in the Dagger pipeline.
+
+### Coverage Gate
+
+The pipeline enforces **80% branch coverage** via JaCoCo. Branch coverage measures whether all code paths through conditionals (if/else, switch, loops) are tested — a more meaningful metric than line coverage. If coverage drops below 80%, the pipeline fails.
+
+### Architecture
+
+```text
+Developer (local)          GitHub Actions (CI)
+       │                          │
+  mise run ci                mise run ci
+       │                          │
+       └──── dagger call run ─────┘
+                    │
+            ┌───────┴────────┐
+            │  Dagger Engine │
+            │  (containerized)│
+            └───────┬────────┘
+                    │
+        ┌───────────┼───────────┐
+        ▼           ▼           ▼
+     Build        Test      Image Build
+   (Maven)    (JaCoCo)   (Containerfile)
+```
 
 ## Documentation
 
@@ -89,11 +153,13 @@ See the [Development Guide](docs/DEVELOPMENT.md) for detailed TDD requirements a
 
 ## Containerization
 
-Build a Docker container image:
+Build a production container image with Podman:
 
 ```bash
-./mvnw spring-boot:build-image
+podman build -t emerald-grove-pet-clinic .
 ```
+
+The `Containerfile` uses a multi-stage build (Maven/Corretto 17 → Chainguard distroless JRE) producing a minimal, non-root, shell-less production image. See [Spec 11](docs/specs/11-spec-production-containerization/11-spec-production-containerization.md) for details.
 
 ## Application Features
 
