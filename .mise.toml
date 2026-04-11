@@ -30,9 +30,28 @@ run = "./mvnw spring-javaformat:validate checkstyle:check"
 description = "Start local dev environment (PostgreSQL + Spring Boot)"
 run = "podman compose up -d postgres && ./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres"
 
+[tasks.deploy]
+description = "Deploy to AWS (build image, push to ECR, update ECS)"
+run = """
+ECR_URL=$(tofu -chdir=infra output -raw ecr_repository_url)
+CLUSTER=$(tofu -chdir=infra output -raw ecs_cluster_name)
+SERVICE=$(tofu -chdir=infra output -raw ecs_service_name)
+dagger -m dagger call deploy --source=. \
+  --registry="$ECR_URL" \
+  --aws-region=us-east-1 \
+  --ecs-cluster="$CLUSTER" \
+  --ecs-service="$SERVICE" \
+  --aws-access-key-id=env:AWS_ACCESS_KEY_ID \
+  --aws-secret-access-key=env:AWS_SECRET_ACCESS_KEY
+"""
+
 [tasks."tofu:plan"]
 description = "Run OpenTofu plan for prod environment"
 run = "tofu -chdir=infra plan -var-file=environments/prod.tfvars"
+
+[tasks.teardown]
+description = "Destroy all AWS resources (requires --confirm flag)"
+run = "scripts/teardown.sh"
 
 [tasks."dev:down"]
 description = "Stop local dev environment"

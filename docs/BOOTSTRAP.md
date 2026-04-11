@@ -97,20 +97,43 @@ tofu -chdir=infra plan -var-file=environments/staging.tfvars
 tofu -chdir=infra plan -var-file=environments/prod.tfvars
 ```
 
-## Tear Down
+## Complete Teardown
 
-To destroy the state backend (only do this if you've already destroyed all managed infrastructure):
+To destroy **all** AWS resources (infrastructure + state backend), use the
+automated teardown task:
 
 ```bash
+# Preview what will be destroyed (safe, no changes made)
+mise run teardown
+
+# Actually destroy everything
+mise run teardown -- --confirm
+```
+
+The teardown executes in order:
+
+1. `tofu destroy` — removes all infrastructure (VPC, ALB, ECR, ECS, RDS, IAM roles, secrets)
+2. `aws s3 rm` — empties the state bucket
+3. `tofu destroy` (bootstrap) — removes the S3 bucket and DynamoDB lock table
+
+After teardown, the only AWS resource remaining is the IAM user you created
+manually for CLI access.
+
+### Manual Teardown
+
+If the automated teardown fails, run these steps manually:
+
+```bash
+# 1. Destroy infrastructure
+tofu -chdir=infra destroy -var-file=environments/prod.tfvars
+
+# 2. Empty state bucket
+aws s3 rm s3://emerald-grove-tfstate --recursive
+
+# 3. Destroy bootstrap
 tofu -chdir=infra/bootstrap destroy \
   -var='state_bucket_name=emerald-grove-tfstate' \
   -var='lock_table_name=emerald-grove-tflock'
-```
-
-The S3 bucket must be empty before it can be destroyed. If it contains state files, empty it first:
-
-```bash
-aws s3 rm s3://emerald-grove-tfstate --recursive
 ```
 
 ## Troubleshooting
