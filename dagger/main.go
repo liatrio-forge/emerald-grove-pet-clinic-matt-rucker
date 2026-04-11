@@ -98,20 +98,39 @@ func (m *Ci) Deploy(
 	}
 	fmt.Fprintf(&output, "Pushed: %s\n", ref)
 
-	// Force new ECS deployment
-	_, err = awsCli.
-		WithExec([]string{
-			"aws", "ecs", "update-service",
-			"--cluster", ecsCluster,
-			"--service", ecsService,
-			"--force-new-deployment",
-			"--region", awsRegion,
-		}).
+	// Update ECS: register new task definition revision with new image, then update service
+	deployScript := fmt.Sprintf(`
+set -e
+REGION=%s
+CLUSTER=%s
+SERVICE=%s
+IMAGE=%s
+
+# Get current task definition ARN
+CURRENT_TD=$(aws ecs describe-services --cluster "$CLUSTER" --services "$SERVICE" --region "$REGION" --query 'services[0].taskDefinition' --output text)
+echo "Current task definition: $CURRENT_TD"
+
+# Get task definition JSON, update image, strip non-register fields
+aws ecs describe-task-definition --task-definition "$CURRENT_TD" --region "$REGION" --query 'taskDefinition' | \
+  jq --arg img "$IMAGE" '.containerDefinitions[0].image = $img | {family, taskRoleArn, executionRoleArn, networkMode, containerDefinitions, requiresCompatibilities, cpu, memory}' \
+  > /tmp/new-task-def.json
+
+# Register new revision
+NEW_TD=$(aws ecs register-task-definition --region "$REGION" --cli-input-json file:///tmp/new-task-def.json --query 'taskDefinition.taskDefinitionArn' --output text)
+echo "New task definition: $NEW_TD"
+
+# Update service
+aws ecs update-service --cluster "$CLUSTER" --service "$SERVICE" --task-definition "$NEW_TD" --region "$REGION" --query 'service.serviceName' --output text
+echo "ECS deployment triggered"
+`, awsRegion, ecsCluster, ecsService, imageRef)
+
+	deployOutput, err := awsCli.
+		WithExec([]string{"sh", "-c", deployScript}).
 		Stdout(ctx)
 	if err != nil {
 		return output.String(), fmt.Errorf("ECS deploy failed: %w", err)
 	}
-	fmt.Fprintln(&output, "ECS deployment triggered")
+	fmt.Fprint(&output, deployOutput)
 
 	return output.String(), nil
 }
