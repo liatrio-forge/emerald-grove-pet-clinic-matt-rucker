@@ -1,17 +1,40 @@
-name: CI
+name: CI/CD
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 277802554323.dkr.ecr.us-east-1.amazonaws.com/emerald-grove-prod
+  ECS_CLUSTER: emerald-grove-prod-cluster
+  ECS_SERVICE: emerald-grove-prod-service
 jobs:
   ci:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v3
       - run: mise run ci
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::277802554323:role/emerald-grove-prod-ci
+          aws-region: us-east-1
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: >-
+          dagger -m dagger call deploy --source=.
+          --registry=$ECR_REGISTRY
+          --aws-region=$AWS_REGION
+          --ecs-cluster=$ECS_CLUSTER
+          --ecs-service=$ECS_SERVICE
+          --aws-access-key-id=env:AWS_ACCESS_KEY_ID
+          --aws-secret-access-key=env:AWS_SECRET_ACCESS_KEY
+          --aws-session-token=env:AWS_SESSION_TOKEN
       - uses: actions/upload-artifact@v4
         if: always()
         with:
