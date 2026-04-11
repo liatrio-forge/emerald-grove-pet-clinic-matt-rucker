@@ -16,8 +16,23 @@ The Emerald Grove Veterinary Clinic application manages the core operations of a
 
 ### Prerequisites
 
-- **[Mise](https://mise.jdx.dev/)** — tool version manager (installs Java, Node, Maven, Dagger automatically)
+- **[Mise](https://mise.jdx.dev/)** — tool version manager (installs Java, Node, Maven, Dagger, AWS CLI automatically)
 - **[Podman](https://podman.io/)** — container runtime (used for CI pipeline and local dev)
+
+After installing Mise, activate it in your shell (one-time setup):
+
+```bash
+# Fish
+echo 'mise activate fish | source' >> ~/.config/fish/config.fish
+
+# Bash
+echo 'eval "$(mise activate bash)"' >> ~/.bashrc
+
+# Zsh
+echo 'eval "$(mise activate zsh)"' >> ~/.zshrc
+```
+
+Then restart your shell or source the config file.
 
 ### Setup
 
@@ -26,7 +41,7 @@ The Emerald Grove Veterinary Clinic application manages the core operations of a
 git clone https://github.com/liatrio-forge/emerald-grove-pet-clinic-matt-rucker.git
 cd emerald-grove-pet-clinic-matt-rucker
 
-# Install all required tools (Java 17, Node 20, Maven, Dagger)
+# Install all required tools (Java 17, Node 20, Maven, Dagger, AWS CLI, OpenTofu)
 mise install
 
 # Trust the project config (first time only)
@@ -116,7 +131,7 @@ Developer (local)          GitHub Actions (CI)
                     │
             ┌───────┴────────┐
             │  Dagger Engine │
-            │  (containerized)│
+            │ (containerized)│
             └───────┬────────┘
                     │
         ┌───────────┼───────────┐
@@ -131,6 +146,8 @@ Developer (local)          GitHub Actions (CI)
 - **[Architecture Guide](docs/ARCHITECTURE.md)** - System design and technical decisions
 - **[Testing Guide](docs/TESTING.md)** - Comprehensive testing strategies and patterns
 - **[E2E Tests (Playwright)](docs/TESTING.md#end-to-end-e2e-browser-tests-playwright)** - How to run browser-based end-to-end tests
+- **[AWS Bootstrap Guide](docs/BOOTSTRAP.md)** - One-time AWS state backend setup
+- **[Infrastructure Guide](infra/README.md)** - OpenTofu modules, environments, and deployment
 
 ## Development Standards
 
