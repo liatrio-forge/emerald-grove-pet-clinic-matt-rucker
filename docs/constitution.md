@@ -111,3 +111,6 @@ All cloud infrastructure must be defined in code using OpenTofu. No manual resou
 - State must be stored remotely with locking (S3 + DynamoDB)
 - Environments are parameterized via variable files, not duplicated modules
 - Secrets and credentials must never appear in IaC files — use AWS Secrets Manager or SSM Parameter Store
+- **Teardown ordering**: Always destroy infrastructure (which reads state) before destroying the state backend. Never empty or delete the state bucket while resources still exist.
+- **Destructible resources**: Resources that accumulate contents (ECR repositories, S3 buckets) must have `force_delete = true` so `tofu destroy` works cleanly
+- **Teardown must be tested**: Every spec that creates cloud resources must include a teardown proof artifact demonstrating clean destruction
