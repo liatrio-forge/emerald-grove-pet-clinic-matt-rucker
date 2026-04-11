@@ -107,7 +107,7 @@ Add `BuildImage` and `Push` Dagger functions. `BuildImage` uses the existing Con
 - [x] 3.5 Verify: run `dagger call build-image --source=.` to confirm standalone image build. Run `mise run ci` to confirm full pipeline including image build but no push. Run `dagger call ci --source=. --registry=test.ecr.aws/fake` to confirm push is attempted (will fail with auth error — expected).
 - [x] 3.6 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-03-proofs.md`
 
-### [ ] 4.0 GitHub Actions Thin Workflow
+### [x] 4.0 GitHub Actions Thin Workflow
 
 Replace existing `e2e-tests.yml` and `performance-tests.yml` with a single `ci.yml` that uses `jdx/mise-action@v3` and runs `mise run ci`. The workflow YAML contains no build logic — only checkout, mise setup, and `mise run ci`.
 
@@ -120,13 +120,13 @@ Replace existing `e2e-tests.yml` and `performance-tests.yml` with a single `ci.y
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Create `.github/workflows/ci.yml` with:
+- [x] 4.1 Create `.github/workflows/ci.yml` with:
   - Trigger: `on: push (main), pull_request (main)`
   - Single job on `ubuntu-latest`
   - Steps: `actions/checkout@v4` → `jdx/mise-action@v3` → `run: mise run ci`
   - Upload JaCoCo coverage report as artifact (`actions/upload-artifact@v4` with `target/site/jacoco/`)
   - No other build logic, test commands, or deployment steps
-- [ ] 4.2 Delete `.github/workflows/e2e-tests.yml`
-- [ ] 4.3 Delete `.github/workflows/performance-tests.yml`
-- [ ] 4.4 Verify the new workflow by reading `ci.yml` and confirming it's under 20 lines of YAML (excluding comments) and contains no build logic
-- [ ] 4.5 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-04-proofs.md`
+- [x] 4.2 Delete `.github/workflows/e2e-tests.yml`
+- [x] 4.3 Delete `.github/workflows/performance-tests.yml`
+- [x] 4.4 Verify the new workflow by reading `ci.yml` and confirming it's under 20 lines of YAML (excluding comments) and contains no build logic
+- [x] 4.5 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-04-proofs.md`
