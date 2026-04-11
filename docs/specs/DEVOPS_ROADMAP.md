@@ -46,7 +46,7 @@
 
 ### Spec 13: OpenTofu Foundation
 
-- **Status:** Not started
+- **Status:** Complete (PR #30 merged)
 - **Directory:** `docs/specs/13-spec-opentofu-foundation/`
 - **Scope:** VPC, ECR, ECS Fargate, RDS PostgreSQL, IAM, security groups — staging + prod environments. S3 + DynamoDB state backend. Single module with tfvars per environment.
 - **Depends on:** Spec 11
