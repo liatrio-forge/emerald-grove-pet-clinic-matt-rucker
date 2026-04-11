@@ -103,7 +103,7 @@ Update `ci.yml` to add OIDC permissions, AWS credential configuration, and deplo
 - [x] 3.2 Verify: read the workflow and confirm no AWS CLI commands, no `docker` commands, no `ecr get-login-password` — all deploy logic is in Dagger.
 - [x] 3.3 Save proof artifact output to `docs/specs/14-spec-cd-pipeline/14-proofs/14-task-03-proofs.md`
 
-### [~] 4.0 Teardown Automation and Documentation
+### [x] 4.0 Teardown Automation and Documentation
 
 Create `mise run teardown` task with `--confirm` safety flag. Without flag: print what would be destroyed. With flag: destroy infra, empty S3, destroy bootstrap. Update BOOTSTRAP.md with teardown procedure. Execute teardown and verify zero resources remain.
 
