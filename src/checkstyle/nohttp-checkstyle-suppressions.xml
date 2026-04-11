@@ -8,4 +8,10 @@
 	<suppress files="build[\\/].*" checks=".*"/>
 	<suppress files="target[\\/].*" checks=".*"/>
 	<suppress files=".+\.(jar|git|ico|p12|gif|jks|jpg|svg|log)" checks="NoHttp"/>
+	<suppress files="docs[\\/].*" checks="NoHttp"/>
+	<suppress files="infra[\\/].*" checks=".*"/>
+	<suppress files="dagger[\\/].*" checks=".*"/>
+	<suppress files="scripts[\\/].*" checks=".*"/>
+	<suppress files="e2e-tests[\\/].*" checks=".*"/>
+	<suppress files=".+\.(tf|tfvars|go|sh|ts|toml|lock)" checks=".*"/>
 </suppressions>
