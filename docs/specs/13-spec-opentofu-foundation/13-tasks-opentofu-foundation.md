@@ -70,7 +70,7 @@ Add OpenTofu to `.mise.toml` and create the `infra/bootstrap/` config that provi
 - [x] 1.7 Verify: run `tofu -chdir=infra/bootstrap init` and `tofu -chdir=infra/bootstrap plan -var='state_bucket_name=emerald-grove-tfstate' -var='lock_table_name=emerald-grove-tflock'`. Both must succeed.
 - [x] 1.8 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-01-proofs.md`
 
-### [ ] 2.0 Networking Module (VPC, Subnets, Security Groups, ALB)
+### [~] 2.0 Networking Module (VPC, Subnets, Security Groups, ALB)
 
 Create `infra/modules/networking/` with VPC, public subnets, internet gateway, security groups (ALB, ECS, RDS), and the Application Load Balancer with HTTP listener and health check target group. Create the root module skeleton (`providers.tf`, `main.tf`, `variables.tf`, `outputs.tf`) that uses the networking module.
 
