@@ -70,7 +70,7 @@ Add OpenTofu to `.mise.toml` and create the `infra/bootstrap/` config that provi
 - [x] 1.7 Verify: run `tofu -chdir=infra/bootstrap init` and `tofu -chdir=infra/bootstrap plan -var='state_bucket_name=emerald-grove-tfstate' -var='lock_table_name=emerald-grove-tflock'`. Both must succeed.
 - [x] 1.8 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-01-proofs.md`
 
-### [~] 2.0 Networking Module (VPC, Subnets, Security Groups, ALB)
+### [x] 2.0 Networking Module (VPC, Subnets, Security Groups, ALB)
 
 Create `infra/modules/networking/` with VPC, public subnets, internet gateway, security groups (ALB, ECS, RDS), and the Application Load Balancer with HTTP listener and health check target group. Create the root module skeleton (`providers.tf`, `main.tf`, `variables.tf`, `outputs.tf`) that uses the networking module.
 
@@ -81,12 +81,12 @@ Create `infra/modules/networking/` with VPC, public subnets, internet gateway, s
 
 #### 2.0 Tasks
 
-- [ ] 2.1 Create `infra/providers.tf` with:
+- [x] 2.1 Create `infra/providers.tf` with:
   - `terraform` block requiring `aws ~> 5.0` and `random ~> 3.0` providers, and an S3 backend block (bucket, key, region, dynamodb_table as variables — use partial config, values supplied via `-backend-config` or hardcoded for this exercise)
   - `provider "aws"` with `region = var.region` and default tags (`Project`, `Environment`, `ManagedBy`)
-- [ ] 2.2 Create `infra/variables.tf` with root-level variables: `region` (default `us-east-1`), `environment` (string), `project` (default `emerald-grove`), `vpc_cidr` (default `10.0.0.0/16`), `app_port` (default `8080`).
-- [ ] 2.3 Create `infra/modules/networking/variables.tf` with inputs: `environment`, `project`, `vpc_cidr`, `app_port`.
-- [ ] 2.4 Create `infra/modules/networking/main.tf` with:
+- [x] 2.2 Create `infra/variables.tf` with root-level variables: `region` (default `us-east-1`), `environment` (string), `project` (default `emerald-grove`), `vpc_cidr` (default `10.0.0.0/16`), `app_port` (default `8080`).
+- [x] 2.3 Create `infra/modules/networking/variables.tf` with inputs: `environment`, `project`, `vpc_cidr`, `app_port`.
+- [x] 2.4 Create `infra/modules/networking/main.tf` with:
   - `aws_vpc` with DNS support and hostnames enabled
   - 2 `aws_subnet` resources in different AZs (use `data.aws_availability_zones.available`), CIDR sliced from VPC CIDR
   - `aws_internet_gateway` attached to VPC
@@ -97,15 +97,15 @@ Create `infra/modules/networking/` with VPC, public subnets, internet gateway, s
   - `aws_lb` (application) in public subnets with ALB security group
   - `aws_lb_target_group` on port `var.app_port` with health check on `/actuator/health` (target type `ip` for Fargate)
   - `aws_lb_listener` on port 80 forwarding to the target group
-- [ ] 2.5 Create `infra/modules/networking/outputs.tf` exposing: `vpc_id`, `public_subnet_ids`, `alb_arn`, `alb_dns_name`, `alb_target_group_arn`, `alb_security_group_id`, `ecs_security_group_id`, `rds_security_group_id`.
-- [ ] 2.6 Create `infra/main.tf` with the networking module block, passing variables from root.
-- [ ] 2.7 Create `infra/outputs.tf` exposing `alb_dns_name` from the networking module.
-- [ ] 2.8 Create `infra/environments/staging.tfvars` with `environment = "staging"` (minimal for now, more values added in later tasks).
-- [ ] 2.9 Create `infra/environments/prod.tfvars` with `environment = "prod"`.
-- [ ] 2.10 Verify: run `tofu -chdir=infra init -backend=false` (skip backend since S3 doesn't exist) and `tofu -chdir=infra plan -var-file=environments/staging.tfvars`. Plan must succeed showing VPC, subnets, ALB, and security group resources.
-- [ ] 2.11 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-02-proofs.md`
+- [x] 2.5 Create `infra/modules/networking/outputs.tf` exposing: `vpc_id`, `public_subnet_ids`, `alb_arn`, `alb_dns_name`, `alb_target_group_arn`, `alb_security_group_id`, `ecs_security_group_id`, `rds_security_group_id`.
+- [x] 2.6 Create `infra/main.tf` with the networking module block, passing variables from root.
+- [x] 2.7 Create `infra/outputs.tf` exposing `alb_dns_name` from the networking module.
+- [x] 2.8 Create `infra/environments/staging.tfvars` with `environment = "staging"` (minimal for now, more values added in later tasks).
+- [x] 2.9 Create `infra/environments/prod.tfvars` with `environment = "prod"`.
+- [x] 2.10 Verify: run `tofu -chdir=infra init -backend=false` (skip backend since S3 doesn't exist) and `tofu -chdir=infra plan -var-file=environments/staging.tfvars`. Plan must succeed showing VPC, subnets, ALB, and security group resources.
+- [x] 2.11 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-02-proofs.md`
 
-### [~] 3.0 ECR Module (Container Registry)
+### [x] 3.0 ECR Module (Container Registry)
 
 Create `infra/modules/ecr/` with the ECR repository, image scanning, immutable tags, and lifecycle policy. Wire into the root module.
 
@@ -115,16 +115,16 @@ Create `infra/modules/ecr/` with the ECR repository, image scanning, immutable t
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Create `infra/modules/ecr/variables.tf` with inputs: `environment`, `project`.
-- [ ] 3.2 Create `infra/modules/ecr/main.tf` with:
+- [x] 3.1 Create `infra/modules/ecr/variables.tf` with inputs: `environment`, `project`.
+- [x] 3.2 Create `infra/modules/ecr/main.tf` with:
   - `aws_ecr_repository` with name `${var.project}-${var.environment}`, image tag mutability `IMMUTABLE`, image scanning on push enabled
   - `aws_ecr_lifecycle_policy` keeping the last 10 tagged images (expire untagged after 1 day)
-- [ ] 3.3 Create `infra/modules/ecr/outputs.tf` exposing: `repository_url`, `repository_arn`.
-- [ ] 3.4 Add the ECR module to `infra/main.tf`. Add `ecr_repository_url` to `infra/outputs.tf`.
-- [ ] 3.5 Verify: `tofu -chdir=infra plan -var-file=environments/staging.tfvars` shows ECR resources.
-- [ ] 3.6 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-03-proofs.md`
+- [x] 3.3 Create `infra/modules/ecr/outputs.tf` exposing: `repository_url`, `repository_arn`.
+- [x] 3.4 Add the ECR module to `infra/main.tf`. Add `ecr_repository_url` to `infra/outputs.tf`.
+- [x] 3.5 Verify: `tofu -chdir=infra plan -var-file=environments/staging.tfvars` shows ECR resources.
+- [x] 3.6 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-03-proofs.md`
 
-### [ ] 4.0 RDS Module (PostgreSQL Database)
+### [x] 4.0 RDS Module (PostgreSQL Database)
 
 Create `infra/modules/rds/` with the RDS PostgreSQL instance, random password generation, Secrets Manager secret for the database password, and DB subnet group. Wire into the root module.
 
@@ -134,8 +134,8 @@ Create `infra/modules/rds/` with the RDS PostgreSQL instance, random password ge
 
 #### 4.0 Tasks
 
-- [ ] 4.1 Create `infra/modules/rds/variables.tf` with inputs: `environment`, `project`, `subnet_ids` (list of subnet IDs), `security_group_id`, `instance_class` (default `db.t4g.micro`), `db_name` (default `petclinic`), `db_username` (default `petclinic`), `allocated_storage` (default `20`).
-- [ ] 4.2 Create `infra/modules/rds/main.tf` with:
+- [x] 4.1 Create `infra/modules/rds/variables.tf` with inputs: `environment`, `project`, `subnet_ids` (list of subnet IDs), `security_group_id`, `instance_class` (default `db.t4g.micro`), `db_name` (default `petclinic`), `db_username` (default `petclinic`), `allocated_storage` (default `20`).
+- [x] 4.2 Create `infra/modules/rds/main.tf` with:
   - `random_password` resource (length 32, special characters enabled but limited to safe set)
   - `aws_db_subnet_group` using the provided subnet IDs
   - `aws_db_instance` with: engine `postgres`, engine version `16`, instance class from variable, allocated storage, db name, username, password from `random_password`, db subnet group, security group, `publicly_accessible = false`, `skip_final_snapshot = true`, `deletion_protection = false`, storage type `gp3`
@@ -143,12 +143,12 @@ Create `infra/modules/rds/` with the RDS PostgreSQL instance, random password ge
   - `aws_secretsmanager_secret_version` storing the generated password
   - `aws_secretsmanager_secret` for the Anthropic API key (name: `${var.project}/${var.environment}/anthropic-api-key`) — placeholder, real value set out-of-band
   - `aws_secretsmanager_secret_version` with placeholder value `CHANGE_ME`
-- [ ] 4.3 Create `infra/modules/rds/outputs.tf` exposing: `db_endpoint`, `db_name`, `db_username`, `db_password_secret_arn`, `anthropic_api_key_secret_arn`.
-- [ ] 4.4 Add the RDS module to `infra/main.tf`, passing `subnet_ids` and `security_group_id` from the networking module. Add `rds_endpoint` to `infra/outputs.tf`.
-- [ ] 4.5 Verify: `tofu -chdir=infra plan -var-file=environments/staging.tfvars` shows RDS instance, secrets, and subnet group.
-- [ ] 4.6 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-04-proofs.md`
+- [x] 4.3 Create `infra/modules/rds/outputs.tf` exposing: `db_endpoint`, `db_name`, `db_username`, `db_password_secret_arn`, `anthropic_api_key_secret_arn`.
+- [x] 4.4 Add the RDS module to `infra/main.tf`, passing `subnet_ids` and `security_group_id` from the networking module. Add `rds_endpoint` to `infra/outputs.tf`.
+- [x] 4.5 Verify: `tofu -chdir=infra plan -var-file=environments/staging.tfvars` shows RDS instance, secrets, and subnet group.
+- [x] 4.6 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-04-proofs.md`
 
-### [ ] 5.0 ECS Module (Fargate Service) and Environment Parameterization
+### [x] 5.0 ECS Module (Fargate Service) and Environment Parameterization
 
 Create `infra/modules/ecs/` with ECS cluster, task definition (secrets from Secrets Manager, CloudWatch Logs), Fargate service with ALB attachment, and IAM roles. Create `staging.tfvars` and `prod.tfvars`. Verify both environments plan successfully.
 
@@ -160,8 +160,8 @@ Create `infra/modules/ecs/` with ECS cluster, task definition (secrets from Secr
 
 #### 5.0 Tasks
 
-- [ ] 5.1 Create `infra/modules/ecs/variables.tf` with inputs: `environment`, `project`, `container_image` (ECR URL), `container_port` (default `8080`), `cpu` (default `1024`), `memory` (default `2048`), `desired_count` (default `1`), `subnet_ids`, `security_group_id`, `target_group_arn`, `db_endpoint`, `db_name`, `db_username`, `db_password_secret_arn`, `anthropic_api_key_secret_arn`.
-- [ ] 5.2 Create `infra/modules/ecs/main.tf` with:
+- [x] 5.1 Create `infra/modules/ecs/variables.tf` with inputs: `environment`, `project`, `container_image` (ECR URL), `container_port` (default `8080`), `cpu` (default `1024`), `memory` (default `2048`), `desired_count` (default `1`), `subnet_ids`, `security_group_id`, `target_group_arn`, `db_endpoint`, `db_name`, `db_username`, `db_password_secret_arn`, `anthropic_api_key_secret_arn`.
+- [x] 5.2 Create `infra/modules/ecs/main.tf` with:
   - `aws_ecs_cluster` with Fargate capacity provider
   - `aws_cloudwatch_log_group` for container logs (name: `/ecs/${var.project}-${var.environment}`, retention 14 days)
   - `aws_iam_role` for task execution (trust policy for `ecs-tasks.amazonaws.com`) with attached policies:
@@ -176,12 +176,12 @@ Create `infra/modules/ecs/` with ECS cluster, task definition (secrets from Secr
     - Environment (plain): `POSTGRES_URL` constructed as `jdbc:postgresql://${var.db_endpoint}/${var.db_name}`, `POSTGRES_USER` = `var.db_username`
     - Log configuration: awslogs driver pointing to the CloudWatch log group
   - `aws_ecs_service` with: cluster ARN, task definition ARN, desired count, Fargate launch type, network configuration (subnets, security group, `assign_public_ip = true`), load balancer block (target group ARN, container name, container port), health check grace period 60s
-- [ ] 5.3 Create `infra/modules/ecs/outputs.tf` exposing: `cluster_name`, `service_name`, `task_definition_arn`.
-- [ ] 5.4 Add the ECS module to `infra/main.tf`, passing outputs from networking, ecr, and rds modules. Add `ecs_cluster_name`, `ecs_service_name` to `infra/outputs.tf`.
-- [ ] 5.5 Update `infra/environments/staging.tfvars` with all environment-specific values: `environment = "staging"`.
-- [ ] 5.6 Update `infra/environments/prod.tfvars` with: `environment = "prod"`.
-- [ ] 5.7 Verify both environments plan successfully:
+- [x] 5.3 Create `infra/modules/ecs/outputs.tf` exposing: `cluster_name`, `service_name`, `task_definition_arn`.
+- [x] 5.4 Add the ECS module to `infra/main.tf`, passing outputs from networking, ecr, and rds modules. Add `ecs_cluster_name`, `ecs_service_name` to `infra/outputs.tf`.
+- [x] 5.5 Update `infra/environments/staging.tfvars` with all environment-specific values: `environment = "staging"`.
+- [x] 5.6 Update `infra/environments/prod.tfvars` with: `environment = "prod"`.
+- [x] 5.7 Verify both environments plan successfully:
   - `tofu -chdir=infra plan -var-file=environments/staging.tfvars` — full plan with all resources
   - `tofu -chdir=infra plan -var-file=environments/prod.tfvars` — full plan with prod values
   - Both must succeed with no errors
-- [ ] 5.8 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-05-proofs.md`
+- [x] 5.8 Save proof artifact output to `docs/specs/13-spec-opentofu-foundation/13-proofs/13-task-05-proofs.md`
