@@ -38,7 +38,9 @@ func (m *Ci) CoverageCheck(ctx context.Context, source *dagger.Directory) (strin
 
 // BuildImage builds the production container image using the project Containerfile
 func (m *Ci) BuildImage(ctx context.Context, source *dagger.Directory) *dagger.Container {
-	return source.DockerBuild()
+	return source.DockerBuild(dagger.DirectoryDockerBuildOpts{
+		Dockerfile: "Containerfile",
+	})
 }
 
 // Push publishes a container image to a registry with git SHA tag
@@ -46,7 +48,7 @@ func (m *Ci) Push(ctx context.Context, source *dagger.Directory, registry string
 	image := m.BuildImage(ctx, source)
 
 	sha, err := dag.Container().
-		From("docker.io/library/alpine/git:latest").
+		From("docker.io/alpine/git:latest").
 		WithMountedDirectory("/src", source).
 		WithWorkdir("/src").
 		WithExec([]string{"git", "rev-parse", "--short", "HEAD"}).

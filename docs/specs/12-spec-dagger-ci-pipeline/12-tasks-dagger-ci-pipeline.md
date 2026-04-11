@@ -88,7 +88,7 @@ Initialize a Dagger module in `dagger/` with the Go SDK. Implement `Build`, `Tes
 - [x] 2.9 Verify failure detection: temporarily break a test, run `mise run ci`, confirm it fails. Revert the broken test.
 - [x] 2.10 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-02-proofs.md`
 
-### [ ] 3.0 Image Build and Push (ECR-Ready)
+### [x] 3.0 Image Build and Push (ECR-Ready)
 
 Add `BuildImage` and `Push` Dagger functions. `BuildImage` uses the existing Containerfile. `Push` accepts an optional registry URL and tags with git SHA. The `Ci` function incorporates image build and skips push when no registry is provided.
 
@@ -100,12 +100,12 @@ Add `BuildImage` and `Push` Dagger functions. `BuildImage` uses the existing Con
 
 #### 3.0 Tasks
 
-- [ ] 3.1 Implement `BuildImage` function in `dagger/main.go`: takes source directory, builds the container image using the project's `Containerfile` via `src.DockerBuild()` (or equivalent Dagger API for Containerfile builds). Returns the built `*dagger.Container`.
-- [ ] 3.2 Implement `Push` function in `dagger/main.go`: takes a built container and a registry URL string, tags the image with the git short SHA (obtained from `git rev-parse --short HEAD` inside the container or passed as argument), publishes to the registry. Returns the image reference string.
-- [ ] 3.3 Update the `Ci` function to accept an optional `registry` string parameter (default empty). After build/test/coverage, call `BuildImage`. If `registry` is non-empty, call `Push`; otherwise log "Skipping push: no registry configured" and continue.
-- [ ] 3.4 Add `latest` tag logic: if the current git branch is `main` (detected via git or passed as parameter), also tag with `latest` in addition to the SHA tag.
-- [ ] 3.5 Verify: run `dagger call build-image --source=.` to confirm standalone image build. Run `mise run ci` to confirm full pipeline including image build but no push. Run `dagger call ci --source=. --registry=test.ecr.aws/fake` to confirm push is attempted (will fail with auth error — expected).
-- [ ] 3.6 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-03-proofs.md`
+- [x] 3.1 Implement `BuildImage` function in `dagger/main.go`: takes source directory, builds the container image using the project's `Containerfile` via `src.DockerBuild()` (or equivalent Dagger API for Containerfile builds). Returns the built `*dagger.Container`.
+- [x] 3.2 Implement `Push` function in `dagger/main.go`: takes a built container and a registry URL string, tags the image with the git short SHA (obtained from `git rev-parse --short HEAD` inside the container or passed as argument), publishes to the registry. Returns the image reference string.
+- [x] 3.3 Update the `Ci` function to accept an optional `registry` string parameter (default empty). After build/test/coverage, call `BuildImage`. If `registry` is non-empty, call `Push`; otherwise log "Skipping push: no registry configured" and continue.
+- [x] 3.4 Add `latest` tag logic: if the current git branch is `main` (detected via git or passed as parameter), also tag with `latest` in addition to the SHA tag.
+- [x] 3.5 Verify: run `dagger call build-image --source=.` to confirm standalone image build. Run `mise run ci` to confirm full pipeline including image build but no push. Run `dagger call ci --source=. --registry=test.ecr.aws/fake` to confirm push is attempted (will fail with auth error — expected).
+- [x] 3.6 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-03-proofs.md`
 
 ### [ ] 4.0 GitHub Actions Thin Workflow
 
