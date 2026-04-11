@@ -39,7 +39,7 @@
 
 ### Spec 12: Dagger CI Pipeline + Mise Setup
 
-- **Status:** Not started
+- **Status:** Complete (PR #29 merged)
 - **Directory:** `docs/specs/12-spec-dagger-ci-pipeline/`
 - **Scope:** `.mise.toml` (tool versions, tasks), Dagger pipeline (build → test → coverage gate → image build/push to ECR), thin GHA trigger workflow
 - **Depends on:** Spec 11

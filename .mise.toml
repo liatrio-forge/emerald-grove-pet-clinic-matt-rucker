@@ -3,6 +3,7 @@ java = "corretto-17"
 node = "20"
 maven = "3.9"
 dagger = "latest"
+opentofu = "latest"
 
 [tasks.ci]
 description = "Run full CI pipeline (build, test, coverage, image build)"
@@ -27,6 +28,10 @@ run = "./mvnw spring-javaformat:validate checkstyle:check"
 [tasks.dev]
 description = "Start local dev environment (PostgreSQL + Spring Boot)"
 run = "podman compose up -d postgres && ./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres"
+
+[tasks."tofu:plan"]
+description = "Run OpenTofu plan for staging environment"
+run = "tofu -chdir=infra plan -var-file=environments/staging.tfvars"
 
 [tasks."dev:down"]
 description = "Stop local dev environment"

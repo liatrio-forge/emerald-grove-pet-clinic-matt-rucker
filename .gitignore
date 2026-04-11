@@ -50,3 +50,5 @@ temp
 
 ### Local Dev ###
 .local/
+**/.terraform/
+**/.terraform.lock.hcl
