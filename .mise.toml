@@ -31,8 +31,8 @@ description = "Start local dev environment (PostgreSQL + Spring Boot)"
 run = "podman compose up -d postgres && ./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres"
 
 [tasks."tofu:plan"]
-description = "Run OpenTofu plan for staging environment"
-run = "tofu -chdir=infra plan -var-file=environments/staging.tfvars"
+description = "Run OpenTofu plan for prod environment"
+run = "tofu -chdir=infra plan -var-file=environments/prod.tfvars"
 
 [tasks."dev:down"]
 description = "Stop local dev environment"

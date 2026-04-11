@@ -7,20 +7,9 @@ locals {
 # Only needs to be created once per AWS account, but creating per-environment
 # with a data source fallback is safe (OpenTofu handles duplicates gracefully).
 
+# Use existing OIDC provider (shared across the AWS account)
 data "aws_iam_openid_connect_provider" "github" {
-  count = 0 # Set to 1 if provider already exists to use data source instead
-  url   = "https://token.actions.githubusercontent.com"
-}
-
-resource "aws_iam_openid_connect_provider" "github" {
   url = "https://token.actions.githubusercontent.com"
-
-  client_id_list = ["sts.amazonaws.com"]
-
-  # GitHub's OIDC thumbprint
-  thumbprint_list = ["ffffffffffffffffffffffffffffffffffffffff"]
-
-  tags = { Name = "github-actions-oidc" }
 }
 
 # --- CI Role (GitHub Actions) ---
@@ -32,7 +21,7 @@ data "aws_iam_policy_document" "ci_assume_role" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {
@@ -131,7 +120,7 @@ data "aws_iam_policy_document" "tofu_assume_role" {
 
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.github.arn]
+      identifiers = [data.aws_iam_openid_connect_provider.github.arn]
     }
 
     condition {
