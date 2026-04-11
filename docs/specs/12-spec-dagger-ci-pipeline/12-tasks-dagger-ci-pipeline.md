@@ -59,7 +59,7 @@ Create `.mise.toml` with tool versions (Java 17, Node 20, Maven, Dagger) and the
 - [x] 1.5 Update README.md: add a "Development Commands" section after the "Quick Start" section documenting all Mise tasks with descriptions and usage examples. Include `mise install` as the first step in Quick Start.
 - [x] 1.6 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-01-proofs.md`
 
-### [~] 2.0 Dagger CI Pipeline (Build, Test, Coverage Gate)
+### [x] 2.0 Dagger CI Pipeline (Build, Test, Coverage Gate)
 
 Initialize a Dagger module in `dagger/` with the Go SDK. Implement `Build`, `Test`, `CoverageCheck`, and `Ci` functions. The `Ci` function orchestrates build → test → coverage gate (80% branch coverage). Each function is independently callable.
 
@@ -84,9 +84,9 @@ Initialize a Dagger module in `dagger/` with the Go SDK. Implement `Build`, `Tes
   - If the existing codebase is below 80%, adjust the threshold to the current level and document the decision
 - [x] 2.6 Implement the `CoverageCheck` function in `dagger/main.go`: runs after Test, verifies the JaCoCo check goal passed, and outputs the branch coverage percentage from the JaCoCo XML report.
 - [x] 2.7 Implement the `Ci` function in `dagger/main.go`: orchestrates Build → Test (with coverage) → CoverageCheck. Returns success/failure with summary output.
-- [ ] 2.8 Verify the pipeline: run `dagger call ci --source=.` from the project root. Confirm it builds, tests, and reports coverage. Then run `mise run ci` and confirm identical behavior.
-- [ ] 2.9 Verify failure detection: temporarily break a test, run `mise run ci`, confirm it fails. Revert the broken test.
-- [ ] 2.10 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-02-proofs.md`
+- [x] 2.8 Verify the pipeline: run `dagger call ci --source=.` from the project root. Confirm it builds, tests, and reports coverage. Then run `mise run ci` and confirm identical behavior.
+- [x] 2.9 Verify failure detection: temporarily break a test, run `mise run ci`, confirm it fails. Revert the broken test.
+- [x] 2.10 Save proof artifact output to `docs/specs/12-spec-dagger-ci-pipeline/12-proofs/12-task-02-proofs.md`
 
 ### [ ] 3.0 Image Build and Push (ECR-Ready)
 
