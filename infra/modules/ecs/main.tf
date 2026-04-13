@@ -73,6 +73,25 @@ resource "aws_iam_role" "task" {
   tags = { Name = "${local.name_prefix}-task" }
 }
 
+# APS RemoteWrite permission for ADOT sidecar (only when AMP endpoint is configured)
+
+resource "aws_iam_role_policy" "task_amp_write" {
+  count = var.enable_adot_sidecar ? 1 : 0
+
+  name   = "${local.name_prefix}-amp-remote-write"
+  role   = aws_iam_role.task.id
+  policy = data.aws_iam_policy_document.amp_write[0].json
+}
+
+data "aws_iam_policy_document" "amp_write" {
+  count = var.enable_adot_sidecar ? 1 : 0
+
+  statement {
+    actions   = ["aps:RemoteWrite"]
+    resources = ["*"]
+  }
+}
+
 # --- Task Definition ---
 
 resource "aws_ecs_task_definition" "app" {
@@ -84,41 +103,106 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.task_execution.arn
   task_role_arn            = aws_iam_role.task.arn
 
-  container_definitions = jsonencode([
-    {
-      name  = local.container_name
-      image = var.container_image
+  container_definitions = jsonencode(concat(
+    [
+      {
+        name  = local.container_name
+        image = var.container_image
 
-      portMappings = [
-        {
-          containerPort = var.container_port
-          protocol      = "tcp"
+        portMappings = [
+          {
+            containerPort = var.container_port
+            protocol      = "tcp"
+          }
+        ]
+
+        environment = [
+          { name = "SPRING_PROFILES_ACTIVE", value = "postgres" },
+          { name = "POSTGRES_URL", value = "jdbc:postgresql://${var.db_endpoint}/${var.db_name}" },
+          { name = "POSTGRES_USER", value = var.db_username },
+        ]
+
+        secrets = [
+          { name = "POSTGRES_PASS", valueFrom = var.db_password_secret_arn },
+          { name = "ANTHROPIC_API_KEY", valueFrom = var.anthropic_api_key_secret_arn },
+        ]
+
+        logConfiguration = {
+          logDriver = "awslogs"
+          options = {
+            "awslogs-group"         = aws_cloudwatch_log_group.app.name
+            "awslogs-region"        = data.aws_region.current.name
+            "awslogs-stream-prefix" = "ecs"
+          }
         }
-      ]
 
-      environment = [
-        { name = "SPRING_PROFILES_ACTIVE", value = "postgres" },
-        { name = "POSTGRES_URL", value = "jdbc:postgresql://${var.db_endpoint}/${var.db_name}" },
-        { name = "POSTGRES_USER", value = var.db_username },
-      ]
+        essential = true
+      }
+    ],
+    var.enable_adot_sidecar ? [
+      {
+        name      = "adot-collector"
+        image     = "public.ecr.aws/aws-observability/aws-otel-collector:latest"
+        essential = false
+        memory    = 256
 
-      secrets = [
-        { name = "POSTGRES_PASS", valueFrom = var.db_password_secret_arn },
-        { name = "ANTHROPIC_API_KEY", valueFrom = var.anthropic_api_key_secret_arn },
-      ]
+        environment = [
+          {
+            name = "AOT_CONFIG_CONTENT"
+            value = yamlencode({
+              extensions = {
+                sigv4auth = {
+                  region = data.aws_region.current.name
+                }
+              }
+              receivers = {
+                prometheus = {
+                  config = {
+                    scrape_configs = [
+                      {
+                        job_name        = "spring-boot"
+                        scrape_interval = "15s"
+                        static_configs = [
+                          { targets = ["localhost:${var.container_port}"] }
+                        ]
+                        metrics_path = "/actuator/prometheus"
+                      }
+                    ]
+                  }
+                }
+              }
+              exporters = {
+                prometheusremotewrite = {
+                  endpoint = var.amp_remote_write_endpoint
+                  auth = {
+                    authenticator = "sigv4auth"
+                  }
+                }
+              }
+              service = {
+                extensions = ["sigv4auth"]
+                pipelines = {
+                  metrics = {
+                    receivers = ["prometheus"]
+                    exporters = ["prometheusremotewrite"]
+                  }
+                }
+              }
+            })
+          }
+        ]
 
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.app.name
-          "awslogs-region"        = data.aws_region.current.name
-          "awslogs-stream-prefix" = "ecs"
+        logConfiguration = {
+          logDriver = "awslogs"
+          options = {
+            "awslogs-group"         = aws_cloudwatch_log_group.app.name
+            "awslogs-region"        = data.aws_region.current.name
+            "awslogs-stream-prefix" = "adot"
+          }
         }
       }
-
-      essential = true
-    }
-  ])
+    ] : []
+  ))
 
   tags = { Name = "${local.name_prefix}-task" }
 }

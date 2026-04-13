@@ -26,3 +26,8 @@ variable "app_port" {
   type        = number
   default     = 8080
 }
+
+variable "grafana_admin_email" {
+  description = "Email address for the Grafana admin user in IAM Identity Center"
+  type        = string
+}
