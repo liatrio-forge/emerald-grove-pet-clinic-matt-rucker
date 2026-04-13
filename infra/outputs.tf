@@ -32,3 +32,13 @@ output "tofu_role_arn" {
   description = "ARN of the Tofu role for infrastructure management"
   value       = module.identity.tofu_role_arn
 }
+
+output "amp_workspace_id" {
+  description = "ID of the Amazon Managed Prometheus workspace"
+  value       = module.monitoring.amp_workspace_id
+}
+
+output "amg_workspace_url" {
+  description = "URL of the Amazon Managed Grafana workspace"
+  value       = module.monitoring.amg_workspace_url
+}
