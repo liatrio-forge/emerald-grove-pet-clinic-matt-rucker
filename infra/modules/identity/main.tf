@@ -226,6 +226,36 @@ data "aws_iam_policy_document" "tofu_permissions" {
     resources = ["*"]
   }
 
+  # AMP (Amazon Managed Prometheus)
+  statement {
+    sid = "AMP"
+    actions = [
+      "aps:*",
+    ]
+    resources = ["*"]
+  }
+
+  # AMG (Amazon Managed Grafana)
+  statement {
+    sid = "AMG"
+    actions = [
+      "grafana:*",
+    ]
+    resources = ["*"]
+  }
+
+  # IAM Identity Center (for AMG user provisioning)
+  statement {
+    sid = "IdentityStore"
+    actions = [
+      "identitystore:*User*",
+      "identitystore:DescribeGroup",
+      "identitystore:ListGroupMemberships",
+      "sso:DescribeRegisteredRegions",
+    ]
+    resources = ["*"]
+  }
+
   # S3 (state bucket)
   statement {
     sid = "S3State"

@@ -76,3 +76,15 @@ variable "anthropic_api_key_secret_arn" {
   description = "ARN of the Secrets Manager secret for Anthropic API key"
   type        = string
 }
+
+variable "enable_adot_sidecar" {
+  description = "Whether to add an ADOT sidecar container for Prometheus metrics collection"
+  type        = bool
+  default     = false
+}
+
+variable "amp_remote_write_endpoint" {
+  description = "AMP remote write endpoint URL. Required when enable_adot_sidecar is true."
+  type        = string
+  default     = ""
+}

@@ -32,6 +32,14 @@ module "identity" {
   ecr_repository_arn = module.ecr.repository_arn
 }
 
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  environment        = var.environment
+  project            = var.project
+  grafana_user_email = var.grafana_admin_email
+}
+
 module "ecs" {
   source = "./modules/ecs"
 
@@ -46,4 +54,6 @@ module "ecs" {
   db_username                 = module.rds.db_username
   db_password_secret_arn      = module.rds.db_password_secret_arn
   anthropic_api_key_secret_arn = module.rds.anthropic_api_key_secret_arn
+  enable_adot_sidecar         = true
+  amp_remote_write_endpoint   = module.monitoring.amp_remote_write_endpoint
 }
