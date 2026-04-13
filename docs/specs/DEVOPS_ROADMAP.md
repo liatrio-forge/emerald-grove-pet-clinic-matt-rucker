@@ -60,9 +60,9 @@
 
 ### Spec 15: Monitoring & Observability
 
-- **Status:** Not started
+- **Status:** Complete (PR #35 merged)
 - **Directory:** `docs/specs/15-spec-monitoring-observability/`
-- **Scope:** Micrometer integration in Spring Boot → AMP. AMG dashboards (latency, error rate, throughput, JVM metrics). CloudWatch Logs aggregation. CloudWatch Anomaly Detection on key metrics. OpenTofu for AMP/AMG/CloudWatch resources.
+- **Scope:** Micrometer Prometheus registry in Spring Boot, AMP workspace, AMG workspace (SSO auth), ADOT sidecar in ECS for metrics collection, Grafana dashboard as code (4 panels), OpenTofu for all monitoring resources.
 - **Depends on:** Specs 13, 14
 
 ### Spec 16: Security Scanning
