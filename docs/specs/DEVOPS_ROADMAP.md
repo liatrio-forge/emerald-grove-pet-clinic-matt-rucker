@@ -67,9 +67,9 @@
 
 ### Spec 16: Security Scanning
 
-- **Status:** Not started
+- **Status:** Complete (PR #37 merged)
 - **Directory:** `docs/specs/16-spec-security-scanning/`
-- **Scope:** Grype integration in Dagger pipeline (scan CycloneDX SBOM). AWS Inspector enabled on ECR repos. Fail pipeline on critical/high vulnerabilities.
+- **Scope:** Syft SBOM generation + dual Grype scan (SBOM + image) in Dagger pipeline, ECR scan verification in Deploy(), .grype.yaml CVE allowlist, SARIF upload to GitHub Security tab. Fails pipeline on Critical/High.
 - **Depends on:** Spec 12
 
 ### Spec 17: Dev Environment & Lean Tooling
