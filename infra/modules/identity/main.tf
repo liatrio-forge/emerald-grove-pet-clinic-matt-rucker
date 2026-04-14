@@ -66,6 +66,7 @@ data "aws_iam_policy_document" "ci_permissions" {
       "ecr:InitiateLayerUpload",
       "ecr:UploadLayerPart",
       "ecr:CompleteLayerUpload",
+      "ecr:DescribeImageScanFindings",
     ]
     resources = [var.ecr_repository_arn]
   }

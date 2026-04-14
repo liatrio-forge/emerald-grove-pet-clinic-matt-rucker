@@ -1,0 +1,21 @@
+ignore:
+  # tomcat-embed-core 11.0.14 — managed by Spring Boot 4.0 BOM.
+  # Upgrading requires a Spring Boot version bump; individual override may break compatibility.
+  - vulnerability: GHSA-95jq-rwvf-vjx4
+    reason: "Spring Boot 4.0 BOM manages tomcat version; upgrade tracked upstream"
+  - vulnerability: GHSA-mgp5-rv84-w37q
+    reason: "Spring Boot 4.0 BOM manages tomcat version; upgrade tracked upstream"
+  - vulnerability: GHSA-h468-7pvh-8vr8
+    reason: "Spring Boot 4.0 BOM manages tomcat version; upgrade tracked upstream"
+  - vulnerability: GHSA-rv64-5gf8-9qq8
+    reason: "Spring Boot 4.0 BOM manages tomcat version; upgrade tracked upstream"
+  - vulnerability: GHSA-x4m4-345f-5h5g
+    reason: "Spring Boot 4.0 BOM manages tomcat version; upgrade tracked upstream"
+  - vulnerability: GHSA-563x-q5rq-57qp
+    reason: "Spring Boot 4.0 BOM manages tomcat version; upgrade tracked upstream"
+
+  # jackson-core 3.0.2 — managed by Spring Boot 4.0 BOM.
+  - vulnerability: GHSA-6v53-7c9g-w56r
+    reason: "Spring Boot 4.0 BOM manages jackson version; upgrade tracked upstream"
+  - vulnerability: GHSA-2m67-wjpj-xhg9
+    reason: "Spring Boot 4.0 BOM manages jackson version; upgrade tracked upstream"
